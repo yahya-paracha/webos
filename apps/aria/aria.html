@@ -1,0 +1,200 @@
+<!-- ============================================================================
+     WebOS — ARIA AI Assistant
+     ----------------------------------------------------------------------------
+     Template is cloned by js/aria.js into each window. We wrap the markup in a
+     <template> so IDs don't collide when multiple windows are open (though ARIA
+     is a singleton by default).
+     ========================================================================== -->
+<template id="aria-app-template">
+  <div class="aria-root">
+
+    <!-- ===================== LEFT SIDEBAR ===================== -->
+    <aside class="aria-sidebar" data-ref="sidebar">
+      <div class="aria-sidebar-top">
+        <button class="aria-new-btn" data-ref="newChatBtn" title="New conversation (Ctrl+N)">
+          <span class="aria-new-icon">✎</span>
+          <span>New chat</span>
+        </button>
+      </div>
+
+      <div class="aria-threads-wrap">
+        <div class="aria-threads-label">Conversations</div>
+        <div class="aria-threads" data-ref="threads" role="list"></div>
+      </div>
+
+      <div class="aria-sidebar-bottom">
+        <div class="aria-footer-user">
+          <div class="aria-avatar" data-ref="userAvatar" aria-hidden="true">U</div>
+          <div class="aria-user-meta">
+            <div class="aria-user-name">User</div>
+            <div class="aria-user-status">Claude Sonnet</div>
+          </div>
+        </div>
+        <button class="aria-settings-btn" data-ref="settingsBtn" title="Settings">
+          <span>⚙</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN PANEL ===================== -->
+    <main class="aria-main">
+      <!-- Top bar -->
+      <header class="aria-topbar">
+        <div class="aria-topbar-left">
+          <button class="aria-icon-btn aria-sidebar-toggle" data-ref="sidebarToggle" title="Toggle sidebar">
+            <span>☰</span>
+          </button>
+          <input class="aria-title-input" data-ref="titleInput" type="text" placeholder="New chat" aria-label="Conversation title" />
+          <span class="aria-model-badge" data-ref="modelBadge" title="Active model">Claude Sonnet 4</span>
+        </div>
+        <div class="aria-topbar-right">
+          <button class="aria-icon-btn" data-ref="exportBtn" title="Export conversation">
+            <span>📥</span>
+            <span class="aria-btn-label">Export</span>
+          </button>
+          <button class="aria-icon-btn aria-danger" data-ref="clearBtn" title="Clear conversation (Ctrl+Delete)">
+            <span>🗑</span>
+            <span class="aria-btn-label">Clear</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages area -->
+      <section class="aria-messages" data-ref="messages" role="log" aria-live="polite"></section>
+
+      <!-- Suggested prompts (shown on empty conv) -->
+      <section class="aria-suggestions" data-ref="suggestions" hidden>
+        <div class="aria-suggestions-head">
+          <div class="aria-suggestions-title">Try something like…</div>
+          <div class="aria-suggestions-sub">Tap a card to start instantly</div>
+        </div>
+        <div class="aria-suggestion-grid" data-ref="suggestionGrid"></div>
+      </section>
+
+      <!-- Setup screen (no API key) -->
+      <section class="aria-setup" data-ref="setupScreen" hidden>
+        <div class="aria-setup-card">
+          <div class="aria-setup-icon">🔑</div>
+          <h2>Welcome to ARIA</h2>
+          <p class="aria-setup-lead">
+            ARIA is your built-in AI assistant. To get started, connect your Anthropic API key.
+          </p>
+          <ol class="aria-setup-steps">
+            <li>Sign in at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a>.</li>
+            <li>Navigate to <b>API Keys</b> and click <b>Create Key</b>.</li>
+            <li>Copy the key (it starts with <code>sk-ant-…</code>) and paste it below.</li>
+          </ol>
+          <label class="aria-setup-field">
+            <span>Anthropic API Key</span>
+            <div class="aria-pw-row">
+              <input type="password" data-ref="setupKey" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false" />
+              <button type="button" class="aria-eye" data-ref="setupEye" title="Show/hide key">👁</button>
+            </div>
+          </label>
+          <div class="aria-setup-actions">
+            <button class="aria-btn primary" data-ref="setupSave">Save &amp; continue</button>
+            <button class="aria-btn" data-ref="setupTest">Test connection</button>
+          </div>
+          <div class="aria-setup-msg" data-ref="setupMsg" aria-live="polite"></div>
+          <div class="aria-setup-privacy">
+            Your key is stored locally in your browser (localStorage and the
+            WebOS FileSystem at <code>/.aria/apikey</code>). It never leaves
+            your machine except when making direct requests to Anthropic.
+          </div>
+        </div>
+      </section>
+
+      <!-- Input area -->
+      <footer class="aria-input-area" data-ref="inputArea">
+        <div class="aria-input-wrap">
+          <button class="aria-input-btn" data-ref="attachBtn" title="Attach (coming soon)" type="button">📎</button>
+          <button class="aria-input-btn" data-ref="voiceBtn" title="Voice input" type="button">🎙</button>
+          <textarea
+            class="aria-input"
+            data-ref="input"
+            rows="1"
+            placeholder="Ask ARIA anything… (Shift+Enter for newline)"
+            aria-label="Message"
+          ></textarea>
+          <button class="aria-send-btn" data-ref="sendBtn" title="Send (Enter)" type="button">
+            <span class="aria-send-icon">➤</span>
+          </button>
+        </div>
+        <div class="aria-input-footer">
+          <div class="aria-hint">
+            <span class="aria-rec" data-ref="recIndicator" hidden>● Recording…</span>
+            <span class="aria-hint-text" data-ref="hintText">
+              ARIA can make mistakes. Verify important information.
+            </span>
+          </div>
+          <div class="aria-char-counter" data-ref="charCounter">0</div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- ===================== SETTINGS SLIDE-IN ===================== -->
+    <aside class="aria-settings-panel" data-ref="settingsPanel" hidden aria-label="ARIA settings">
+      <div class="aria-settings-head">
+        <h3>Settings</h3>
+        <button class="aria-icon-btn" data-ref="settingsClose" title="Close">✕</button>
+      </div>
+      <div class="aria-settings-body">
+        <div class="aria-setting">
+          <label>Anthropic API Key</label>
+          <div class="aria-pw-row">
+            <input type="password" data-ref="settingsKey" placeholder="sk-ant-…" spellcheck="false" />
+            <button class="aria-eye" data-ref="settingsEye" title="Show/hide" type="button">👁</button>
+          </div>
+          <div class="aria-setting-hint">
+            Stored locally. Only sent to Anthropic when you chat.
+          </div>
+          <div class="aria-setting-actions">
+            <button class="aria-btn" data-ref="settingsTest">Test connection</button>
+          </div>
+        </div>
+
+        <div class="aria-setting">
+          <label>Temperature — <span data-ref="tempValue">0.7</span></label>
+          <input type="range" min="0" max="1" step="0.05" data-ref="tempSlider" />
+          <div class="aria-setting-hint">
+            Lower = more focused / deterministic. Higher = more creative.
+          </div>
+        </div>
+
+        <div class="aria-setting">
+          <label>Max output tokens</label>
+          <select data-ref="maxTokens">
+            <option value="512">512 (short)</option>
+            <option value="1024">1024</option>
+            <option value="2048" selected>2048 (default)</option>
+            <option value="4096">4096</option>
+            <option value="8192">8192 (long)</option>
+          </select>
+        </div>
+
+        <div class="aria-setting">
+          <label>System prompt</label>
+          <textarea data-ref="systemPrompt" rows="6" spellcheck="false"></textarea>
+        </div>
+
+        <div class="aria-setting">
+          <label>Model</label>
+          <select data-ref="modelSelect">
+            <option value="claude-sonnet-4-20250514" selected>claude-sonnet-4-20250514</option>
+            <option value="claude-opus-4-20250514">claude-opus-4-20250514</option>
+            <option value="claude-3-5-sonnet-latest">claude-3-5-sonnet-latest</option>
+            <option value="claude-3-5-haiku-latest">claude-3-5-haiku-latest</option>
+          </select>
+        </div>
+
+        <div class="aria-settings-footer">
+          <button class="aria-btn" data-ref="resetBtn">Reset to defaults</button>
+          <button class="aria-btn primary" data-ref="saveBtn">Save</button>
+        </div>
+
+        <div class="aria-setting-msg" data-ref="settingsMsg" aria-live="polite"></div>
+      </div>
+    </aside>
+
+  </div>
+</template>

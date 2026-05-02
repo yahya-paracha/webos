@@ -1,0 +1,121 @@
+<!--
+  WebOS — SystemSettings HTML shell
+  ============================================================================
+  Cloned by js/settings.js into a window body. Provides the layout chrome
+  (sidebar + content panel + footer) and a hidden template that the JS uses
+  to populate each tab's body.
+-->
+
+<div class="ossettings-root">
+
+  <!-- ======================================================================
+       SIDEBAR
+       ====================================================================== -->
+  <aside class="osset-sidebar" role="navigation" aria-label="Settings categories">
+
+    <header class="osset-sidebar-header">
+      <div class="osset-brand">
+        <span class="osset-brand-glyph" aria-hidden="true">⚙</span>
+        <div class="osset-brand-text">
+          <strong>System Settings</strong>
+          <small id="osset-brand-sub">WebOS 1.0</small>
+        </div>
+      </div>
+    </header>
+
+    <div class="osset-search">
+      <input
+        id="osset-search"
+        class="osset-search-input"
+        type="text"
+        placeholder="Search settings…"
+        aria-label="Search settings"
+      />
+      <span class="osset-search-glyph">🔎</span>
+    </div>
+
+    <nav id="osset-nav" class="osset-nav" role="tablist">
+      <!-- Populated by settings.js -->
+    </nav>
+
+    <footer class="osset-sidebar-footer">
+      <div id="osset-account-pill" class="osset-account-pill" hidden>
+        <span class="osset-account-avatar" id="osset-account-avatar">🙂</span>
+        <span class="osset-account-text">
+          <strong id="osset-account-name">—</strong>
+          <small id="osset-account-status">Offline</small>
+        </span>
+      </div>
+      <div class="osset-version" id="osset-version">v1.0 — Day 5</div>
+    </footer>
+
+  </aside>
+
+  <!-- ======================================================================
+       MAIN CONTENT AREA
+       ====================================================================== -->
+  <main class="osset-main">
+
+    <header class="osset-header">
+      <div class="osset-header-left">
+        <h2 id="osset-title">Appearance</h2>
+        <p id="osset-subtitle" class="osset-subtitle">Customise how WebOS looks.</p>
+      </div>
+      <div class="osset-header-right">
+        <span id="osset-savestate" class="osset-savestate" data-state="idle">All changes saved</span>
+      </div>
+    </header>
+
+    <div id="osset-panel" class="osset-panel" role="tabpanel">
+      <!-- Each tab's content rendered here by settings.js -->
+    </div>
+
+    <footer class="osset-footer">
+      <button id="osset-reset" class="osset-btn osset-btn-ghost">Reset category</button>
+      <div class="osset-footer-spacer"></div>
+      <span class="osset-hint" id="osset-footer-hint">Changes apply immediately and sync to the backend when online.</span>
+    </footer>
+  </main>
+
+  <!-- ======================================================================
+       SHARED CONTROL TEMPLATES
+       ====================================================================== -->
+  <template id="osset-tpl-section">
+    <section class="osset-section">
+      <h3 class="osset-section-title"></h3>
+      <p class="osset-section-help"></p>
+      <div class="osset-section-body"></div>
+    </section>
+  </template>
+
+  <template id="osset-tpl-row">
+    <div class="osset-row">
+      <div class="osset-row-info">
+        <div class="osset-row-label"></div>
+        <div class="osset-row-help"></div>
+      </div>
+      <div class="osset-row-control"></div>
+    </div>
+  </template>
+
+  <template id="osset-tpl-toggle">
+    <button class="osset-toggle" role="switch" aria-checked="false">
+      <span class="osset-toggle-track">
+        <span class="osset-toggle-thumb"></span>
+      </span>
+    </button>
+  </template>
+
+  <template id="osset-tpl-confirm">
+    <div class="osset-modal-backdrop">
+      <div class="osset-modal" role="dialog" aria-modal="true">
+        <h4 class="osset-modal-title"></h4>
+        <p class="osset-modal-body"></p>
+        <div class="osset-modal-actions">
+          <button class="osset-btn osset-btn-ghost" data-act="cancel">Cancel</button>
+          <button class="osset-btn osset-btn-danger" data-act="ok">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>

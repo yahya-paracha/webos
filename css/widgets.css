@@ -1,0 +1,907 @@
+/* ============================================================================
+ * WebOS — widgets.css
+ * ----------------------------------------------------------------------------
+ * Desktop widget system styles.
+ *   - Widget container with glass effect
+ *   - Widget header (drag area)
+ *   - Resize handle corner
+ *   - Individual widget internals
+ *   - Picker dialog
+ * ==========================================================================*/
+
+/* ============================================================================
+ * WIDGETS LAYER (below windows, above wallpaper)
+ * ==========================================================================*/
+
+.wg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wg-layer > * {
+  pointer-events: auto;
+}
+
+/* ============================================================================
+ * WIDGET CONTAINER
+ * ==========================================================================*/
+
+.wg {
+  position: absolute;
+  min-width: 120px;
+  min-height: 80px;
+  background: var(--window-bg, rgba(16, 20, 35, 0.72));
+  border: 1px solid var(--window-border, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--text, #e6e9f2);
+  font-family: var(--font-ui, 'Inter', system-ui, sans-serif);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: wg-in 280ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+}
+
+@keyframes wg-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.wg.wg-closing {
+  animation: wg-out 180ms ease-in both;
+}
+
+@keyframes wg-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.9); }
+}
+
+.wg:hover {
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.wg.wg-dragging {
+  transition: none;
+  box-shadow:
+    0 26px 60px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.32);
+  cursor: grabbing !important;
+  z-index: 999;
+}
+
+.wg.wg-resizing {
+  transition: none;
+}
+
+/* Widget header / drag handle */
+.wg-header {
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: grab;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.0)
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.wg:hover .wg-header {
+  opacity: 1;
+}
+
+.wg-header:active {
+  cursor: grabbing;
+}
+
+.wg-header-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--text-dim, rgba(230, 233, 242, 0.6));
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wg-header-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.wg-header-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-dim, rgba(230, 233, 242, 0.55));
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 140ms, color 140ms;
+}
+
+.wg-header-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text, #e6e9f2);
+}
+
+.wg-header-btn.close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.wg-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  padding: 8px;
+}
+
+/* Resize handle */
+.wg-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 180ms;
+}
+
+.wg-resize::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.4) 50%);
+  border-radius: 2px;
+}
+
+.wg:hover .wg-resize {
+  opacity: 1;
+}
+
+/* ============================================================================
+ * WIDGET PICKER DIALOG
+ * ==========================================================================*/
+
+.wg-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: wg-fade-in 180ms ease both;
+}
+
+@keyframes wg-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.wg-picker {
+  width: 620px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 80px);
+  background: var(--window-bg, rgba(18, 22, 40, 0.96));
+  border: 1px solid var(--window-border, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  color: var(--text, #e6e9f2);
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: wg-pop-in 240ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes wg-pop-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.wg-picker-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--window-border, rgba(255, 255, 255, 0.07));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wg-picker-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.wg-picker-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.wg-picker-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--window-border, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.wg-picker-card:hover {
+  transform: translateY(-2px);
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+.wg-picker-preview {
+  width: 100%;
+  height: 80px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(6, 182, 212, 0.18));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: var(--text, #e6e9f2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.wg-picker-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wg-picker-desc {
+  font-size: 11px;
+  color: var(--text-dim, rgba(230, 233, 242, 0.6));
+  line-height: 1.4;
+}
+
+.wg-picker-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--window-border, rgba(255, 255, 255, 0.07));
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.wg-btn {
+  appearance: none;
+  border: 1px solid var(--window-border, rgba(255, 255, 255, 0.12));
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text, #e6e9f2);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 140ms, border-color 140ms;
+}
+
+.wg-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.wg-btn.primary {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  border-color: transparent;
+  color: white;
+}
+
+.wg-btn.primary:hover {
+  filter: brightness(1.1);
+}
+
+/* ============================================================================
+ * WIDGET: CLOCK
+ * ==========================================================================*/
+
+.wg-clock {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+}
+
+.wg-clock-svg {
+  width: 140px; height: 140px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.wg-clock-face {
+  fill: rgba(255, 255, 255, 0.03);
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 2;
+}
+
+.wg-clock-tick {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.wg-clock-tick.major {
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 2.5;
+}
+
+.wg-clock-hand-h, .wg-clock-hand-m, .wg-clock-hand-s {
+  stroke-linecap: round;
+  transform-origin: 60px 60px;
+  transform-box: fill-box;
+  transition: transform 250ms cubic-bezier(0.4, 2.2, 0.6, 1);
+}
+
+.wg-clock-hand-h { stroke: var(--text, #e6e9f2); stroke-width: 4; }
+.wg-clock-hand-m { stroke: var(--text, #e6e9f2); stroke-width: 2.6; }
+.wg-clock-hand-s {
+  stroke: #ef4444;
+  stroke-width: 1.5;
+  transition: transform 100ms cubic-bezier(0.4, 2.4, 0.6, 1);
+}
+
+.wg-clock-center {
+  fill: var(--text, #e6e9f2);
+}
+
+.wg-clock-digital {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.wg-clock-date {
+  font-size: 11px;
+  color: var(--text-dim, rgba(230, 233, 242, 0.65));
+}
+
+.wg-clock.theme-cyber .wg-clock-hand-s { stroke: #06b6d4; }
+.wg-clock.theme-crimson .wg-clock-hand-s { stroke: #f43f5e; }
+.wg-clock.theme-emerald .wg-clock-hand-s { stroke: #10b981; }
+.wg-clock.theme-amber .wg-clock-hand-s { stroke: #f59e0b; }
+.wg-clock.theme-violet .wg-clock-hand-s { stroke: #a855f7; }
+
+.wg-clock.no-seconds .wg-clock-hand-s { display: none; }
+
+/* ============================================================================
+ * WIDGET: WEATHER
+ * ==========================================================================*/
+
+.wg-weather {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 4px;
+}
+
+.wg-weather-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.wg-weather-city {
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+  font-family: inherit;
+  padding: 2px 4px;
+  border-radius: 4px;
+  width: 60%;
+  outline: none;
+}
+
+.wg-weather-city:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.wg-weather-unit {
+  font-size: 10.5px;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: inherit;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.wg-weather-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.wg-weather-icon {
+  font-size: 46px;
+  width: 60px;
+  text-align: center;
+}
+
+.wg-weather-temp {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.wg-weather-condition {
+  font-size: 11.5px;
+  color: var(--text-dim, rgba(230, 233, 242, 0.7));
+  margin-top: 2px;
+}
+
+.wg-weather-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 10.5px;
+  color: var(--text-dim, rgba(230, 233, 242, 0.7));
+  margin: 4px 0;
+}
+
+.wg-weather-forecast {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.wg-weather-day {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+}
+
+.wg-weather-day-name {
+  color: var(--text-dim, rgba(230, 233, 242, 0.6));
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wg-weather-day-icon {
+  font-size: 16px;
+}
+
+.wg-weather-day-temp {
+  font-weight: 600;
+}
+
+/* Pure CSS weather art (background fills) */
+.wg-sun-icon    { color: #f59e0b; text-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+.wg-cloud-icon  { color: #cbd5e1; }
+.wg-rain-icon   { color: #3b82f6; }
+.wg-snow-icon   { color: #e0f2fe; }
+.wg-storm-icon  { color: #6366f1; }
+
+/* ============================================================================
+ * WIDGET: STICKY NOTE
+ * ==========================================================================*/
+
+.wg-sticky {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--sticky-bg, #fde68a);
+  color: var(--sticky-fg, #1c1917);
+  border-radius: 10px;
+  padding: 4px;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  transform: rotate(var(--sticky-rot, -0.5deg));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.wg-sticky-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  margin-bottom: 2px;
+}
+
+.wg-sticky-colors {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+
+.wg-sticky-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  transition: transform 120ms;
+}
+
+.wg-sticky-color:hover, .wg-sticky-color.active {
+  transform: scale(1.2);
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.wg-sticky-font {
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  color: inherit;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.wg-sticky-area {
+  flex: 1 1 auto;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: inherit;
+  color: inherit;
+  font-size: var(--sticky-fz, 13px);
+  line-height: 1.5;
+  padding: 6px 8px;
+  outline: none;
+}
+
+.wg-sticky-area::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+/* Sticky note colors */
+.wg-sticky.yellow { --sticky-bg: #fde68a; --sticky-fg: #1c1917; }
+.wg-sticky.blue   { --sticky-bg: #bfdbfe; --sticky-fg: #0c1e3b; }
+.wg-sticky.green  { --sticky-bg: #bbf7d0; --sticky-fg: #052e16; }
+.wg-sticky.pink   { --sticky-bg: #fbcfe8; --sticky-fg: #500724; }
+.wg-sticky.purple { --sticky-bg: #ddd6fe; --sticky-fg: #2e1065; }
+.wg-sticky.orange { --sticky-bg: #fed7aa; --sticky-fg: #431407; }
+
+/* ============================================================================
+ * WIDGET: SYSTEM MONITOR
+ * ==========================================================================*/
+
+.wg-sysmon {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  gap: 6px;
+  padding: 2px 4px;
+}
+
+.wg-sysmon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+}
+
+.wg-sysmon-label {
+  width: 40px;
+  color: var(--text-dim, rgba(230, 233, 242, 0.65));
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wg-sysmon-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.wg-sysmon-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  border-radius: 4px;
+  transition: width 700ms ease;
+  width: 0%;
+}
+
+.wg-sysmon-bar-fill.warn {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+}
+
+.wg-sysmon-value {
+  width: 44px;
+  text-align: right;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+}
+
+.wg-sysmon-spark {
+  flex: 1;
+  min-height: 40px;
+  margin-top: 4px;
+}
+
+/* ============================================================================
+ * WIDGET: CALENDAR
+ * ==========================================================================*/
+
+.wg-cal {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 2px;
+  font-size: 11px;
+}
+
+.wg-cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 6px;
+}
+
+.wg-cal-title {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.wg-cal-nav {
+  display: flex;
+  gap: 2px;
+}
+
+.wg-cal-nav-btn {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.wg-cal-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.wg-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  flex: 1;
+}
+
+.wg-cal-dow {
+  font-size: 9px;
+  text-align: center;
+  color: var(--text-dim, rgba(230, 233, 242, 0.5));
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.wg-cal-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  border-radius: 4px;
+  aspect-ratio: 1;
+  position: relative;
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.wg-cal-day:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wg-cal-day.muted {
+  opacity: 0.35;
+}
+
+.wg-cal-day.today {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  color: white;
+  font-weight: 700;
+}
+
+.wg-cal-day.has-note::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+.wg-cal-day.today.has-note::after {
+  background: white;
+}
+
+/* ============================================================================
+ * WIDGET: QUICK LAUNCH
+ * ==========================================================================*/
+
+.wg-launch {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+}
+
+.wg-launch-item {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 160ms, background 160ms;
+  border: 1px solid transparent;
+  position: relative;
+  user-select: none;
+}
+
+.wg-launch-item:hover {
+  transform: translateY(-2px) scale(1.06);
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+.wg-launch-item.wg-launch-drag {
+  opacity: 0.4;
+}
+
+.wg-launch-item-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9.5px;
+  white-space: nowrap;
+  color: var(--text-dim, rgba(230, 233, 242, 0.7));
+  opacity: 0;
+  transition: opacity 140ms;
+  pointer-events: none;
+}
+
+.wg-launch-item:hover .wg-launch-item-label {
+  opacity: 1;
+}
+
+.wg-launch-add {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-dim, rgba(230, 233, 242, 0.55));
+  transition: background 140ms, color 140ms, border-color 140ms;
+}
+
+.wg-launch-add:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text, #e6e9f2);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ============================================================================
+ * LIGHT THEME ADJUSTMENTS
+ * ==========================================================================*/
+
+:root[data-theme="light"] .wg {
+  background: rgba(252, 253, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #1b1f2e;
+}
+
+:root[data-theme="light"] .wg-clock-face {
+  fill: rgba(0, 0, 0, 0.02);
+  stroke: rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme="light"] .wg-clock-tick { stroke: rgba(0, 0, 0, 0.35); }
+:root[data-theme="light"] .wg-clock-tick.major { stroke: rgba(0, 0, 0, 0.7); }
+:root[data-theme="light"] .wg-clock-hand-h,
+:root[data-theme="light"] .wg-clock-hand-m { stroke: #111827; }
+:root[data-theme="light"] .wg-clock-center { fill: #111827; }
+
+:root[data-theme="light"] .wg-sysmon-bar {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="light"] .wg-picker {
+  background: rgba(252, 253, 255, 0.96);
+  color: #111827;
+}
+
+:root[data-theme="light"] .wg-launch-item {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="light"] .wg-launch-item:hover {
+  background: rgba(124, 58, 237, 0.12);
+}
+
+/* ============================================================================
+ * REDUCED MOTION
+ * ==========================================================================*/
+
+@media (prefers-reduced-motion: reduce) {
+  .wg, .wg-picker, .wg-picker-overlay {
+    animation: none !important;
+  }
+  .wg-clock-hand-h, .wg-clock-hand-m, .wg-clock-hand-s {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,856 @@
+/* ============================================================================
+ * OsPaint — Photoshop-flavored dark UI for the WebOS Paint application.
+ * ----------------------------------------------------------------------------
+ * Notes:
+ *   - All variables prefixed --p- to avoid colliding with the global theme.
+ *   - The .paint-app root takes 100% of the window body (the WebOS window
+ *     manager already sets display:flex on it; we lay things out vertically).
+ *   - Canvas itself uses a CSS checker pattern via gradients for the
+ *     transparency hint (the actual canvas pixels live in the JS layers).
+ * ========================================================================= */
+
+/* ---------- 1. ROOT ------------------------------------------------------- */
+.paint-app {
+  --p-bg-1:        #1a1a1d;
+  --p-bg-2:        #232326;
+  --p-bg-3:        #2c2c30;
+  --p-bg-4:        #3a3a3f;
+  --p-bg-hi:       #45454c;
+  --p-fg-1:        #e9e9ec;
+  --p-fg-2:        #b8b8bf;
+  --p-fg-3:        #7e7e86;
+  --p-border:      #2f2f34;
+  --p-border-hi:   #4a4a52;
+  --p-accent:      #4f8ef7;
+  --p-accent-2:    #7c3aed;
+  --p-warn:        #f59e0b;
+  --p-danger:      #ef4444;
+  --p-row-h:       28px;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  font: 12px/1.4 "Inter", system-ui, sans-serif;
+  color: var(--p-fg-1);
+  background: var(--p-bg-1);
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+}
+
+.paint-app * { box-sizing: border-box; }
+
+.paint-app input,
+.paint-app select,
+.paint-app textarea {
+  font: inherit;
+  color: var(--p-fg-1);
+  background: var(--p-bg-3);
+  border: 1px solid var(--p-border);
+  border-radius: 4px;
+  padding: 2px 4px;
+  outline: none;
+}
+
+.paint-app input[type="number"] {
+  width: 56px;
+  text-align: right;
+}
+
+.paint-app input[type="text"] {
+  padding: 2px 6px;
+}
+
+.paint-app input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.paint-app input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--p-bg-4);
+  border-radius: 2px;
+}
+
+.paint-app input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: var(--p-accent);
+  margin-top: -5px;
+  cursor: pointer;
+  border: 2px solid var(--p-bg-1);
+  box-shadow: 0 0 0 1px var(--p-accent);
+}
+
+.paint-app input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--p-bg-4);
+  border-radius: 2px;
+}
+
+.paint-app input[type="range"]::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: var(--p-accent);
+  border: 2px solid var(--p-bg-1);
+  cursor: pointer;
+}
+
+.paint-app button {
+  font: inherit;
+  color: var(--p-fg-1);
+  background: var(--p-bg-3);
+  border: 1px solid var(--p-border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.paint-app button:hover { background: var(--p-bg-4); border-color: var(--p-border-hi); }
+.paint-app button:active { background: var(--p-bg-hi); }
+.paint-app button:disabled { opacity: 0.4; cursor: default; }
+
+
+/* ---------- 2. MENUBAR ---------------------------------------------------- */
+.paint-menubar {
+  flex: 0 0 auto;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  background: linear-gradient(180deg, var(--p-bg-2) 0%, var(--p-bg-1) 100%);
+  border-bottom: 1px solid var(--p-border);
+  gap: 2px;
+}
+
+.paint-menu {
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--p-fg-1);
+}
+.paint-menu:hover,
+.paint-menu.active {
+  background: var(--p-bg-4);
+}
+
+.paint-menu-spacer { flex: 1; }
+
+.paint-doc-name {
+  color: var(--p-fg-2);
+  padding: 0 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}
+
+
+/* ---------- 3. OPTIONS BAR ----------------------------------------------- */
+.paint-optionsbar {
+  flex: 0 0 auto;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+  background: var(--p-bg-2);
+  border-bottom: 1px solid var(--p-border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-bg-4) transparent;
+}
+.paint-optionsbar::-webkit-scrollbar { height: 4px; }
+.paint-optionsbar::-webkit-scrollbar-thumb { background: var(--p-bg-4); border-radius: 2px; }
+
+.paint-options-tool-icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  background: var(--p-bg-4);
+  border: 1px solid var(--p-border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+.paint-options-tool-label {
+  color: var(--p-fg-1);
+  font-weight: 600;
+  font-size: 12px;
+  padding-right: 4px;
+}
+
+.paint-options-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--p-border);
+  margin: 0 4px;
+}
+
+.paint-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.paint-option label {
+  color: var(--p-fg-2);
+  font-size: 11px;
+}
+.paint-option input[type="range"] { width: 100px; }
+.paint-option[hidden] { display: none !important; }
+
+.paint-tbtn {
+  width: 24px;
+  height: 24px;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+}
+.paint-tbtn.active {
+  background: var(--p-accent) !important;
+  color: white !important;
+  border-color: var(--p-accent) !important;
+}
+
+
+/* ---------- 4. WORKSPACE -------------------------------------------------- */
+.paint-workspace {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+
+/* Toolbar (left) */
+.paint-toolbar {
+  flex: 0 0 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--p-bg-2);
+  border-right: 1px solid var(--p-border);
+  padding: 6px 0 6px 0;
+  gap: 2px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.paint-tool {
+  width: 40px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+  font-size: 16px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px;
+  position: relative;
+}
+.paint-tool:hover { background: var(--p-bg-3) !important; border-color: var(--p-border) !important; }
+.paint-tool.active {
+  background: var(--p-accent) !important;
+  color: white !important;
+  border-color: var(--p-accent) !important;
+  box-shadow: 0 0 0 1px var(--p-accent);
+}
+.paint-tool.has-flyout::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-bottom: 4px solid var(--p-fg-2);
+}
+
+.paint-toolbar-spacer { flex: 1; min-height: 8px; }
+
+/* Color swatches */
+.paint-swatches {
+  position: relative;
+  width: 44px;
+  height: 60px;
+  margin: 6px auto;
+}
+.paint-swatch {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--p-border-hi);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.paint-swatch-bg { right: 0; bottom: 0; }
+.paint-swatch-fg { left: 0; top: 0; box-shadow: 0 0 0 1px #fff inset; }
+.paint-swap, .paint-reset-colors {
+  position: absolute;
+  width: 14px !important;
+  height: 14px !important;
+  padding: 0 !important;
+  font-size: 10px !important;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+}
+.paint-swap { right: 2px; top: 2px; }
+.paint-reset-colors { left: 2px; bottom: 2px; }
+
+
+/* ---------- 5. CANVAS HOST ----------------------------------------------- */
+.paint-canvas-host {
+  flex: 1 1 auto;
+  position: relative;
+  background:
+    repeating-conic-gradient(#1f1f23 0% 25%, #28282d 0% 50%) 0 0/16px 16px;
+  overflow: hidden;
+}
+
+.paint-rulers {
+  position: absolute;
+  background: var(--p-bg-2);
+  color: var(--p-fg-3);
+  font-size: 9px;
+  pointer-events: none;
+  z-index: 2;
+  border: 1px solid var(--p-border);
+}
+.paint-rulers-h { top: 0; left: 16px; right: 0; height: 16px; border-right: none; border-top: none; }
+.paint-rulers-v { top: 16px; left: 0; bottom: 0; width: 16px; border-bottom: none; border-left: none; }
+
+.paint-viewport {
+  position: absolute;
+  inset: 16px 0 0 16px;
+  overflow: auto;
+  padding: 40px;
+  scrollbar-color: var(--p-bg-4) transparent;
+}
+.paint-viewport::-webkit-scrollbar { width: 12px; height: 12px; }
+.paint-viewport::-webkit-scrollbar-track { background: var(--p-bg-1); }
+.paint-viewport::-webkit-scrollbar-thumb { background: var(--p-bg-4); border-radius: 6px; }
+.paint-viewport::-webkit-scrollbar-thumb:hover { background: var(--p-bg-hi); }
+
+.paint-stage {
+  position: relative;
+  margin: 0 auto;
+  background:
+    repeating-conic-gradient(#bfbfbf 0% 25%, #ffffff 0% 50%) 0 0/16px 16px;
+  box-shadow:
+    0 0 0 1px var(--p-border-hi),
+    0 12px 36px rgba(0,0,0,0.5);
+  width: max-content;
+  height: max-content;
+}
+
+.paint-display {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.paint-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+/* Text input overlay */
+.paint-text-input {
+  position: absolute;
+  min-width: 8px;
+  min-height: 1em;
+  outline: 1px dashed var(--p-accent);
+  background: rgba(0,0,0,0.05);
+  padding: 0;
+  white-space: pre;
+  cursor: text;
+  caret-color: var(--p-accent);
+}
+
+/* Pan-cursor while space held */
+.paint-canvas-host.is-panning,
+.paint-canvas-host.is-panning .paint-viewport {
+  cursor: grab;
+}
+.paint-canvas-host.is-panning.is-grabbing,
+.paint-canvas-host.is-panning.is-grabbing .paint-viewport {
+  cursor: grabbing;
+}
+
+
+/* ---------- 6. RIGHT COLUMN ---------------------------------------------- */
+.paint-rightcol {
+  flex: 0 0 240px;
+  display: flex;
+  flex-direction: column;
+  background: var(--p-bg-2);
+  border-left: 1px solid var(--p-border);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-bg-4) transparent;
+}
+
+.paint-panel {
+  border-bottom: 1px solid var(--p-border);
+  flex-shrink: 0;
+}
+
+.paint-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px;
+  background: var(--p-bg-3);
+  border-bottom: 1px solid var(--p-border);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--p-fg-2);
+  cursor: pointer;
+}
+.paint-panel-collapse {
+  font-weight: bold;
+  color: var(--p-fg-3);
+  width: 16px;
+  text-align: center;
+}
+.paint-panel.collapsed .paint-panel-body { display: none; }
+
+.paint-panel-body { padding: 8px; }
+
+.paint-panel-layers { flex: 1; min-height: 240px; display: flex; flex-direction: column; }
+.paint-panel-layers .paint-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+
+/* ---------- 7. COLOR PICKER ---------------------------------------------- */
+.paint-cp-wheel {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 8px;
+  cursor: crosshair;
+}
+.paint-cp-wheel canvas {
+  display: block;
+  border-radius: 4px;
+}
+.paint-cp-marker {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px black;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  left: 50%;
+  top: 50%;
+}
+
+.paint-cp-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 56px;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.paint-cp-row label {
+  color: var(--p-fg-2);
+  font-size: 11px;
+  text-align: center;
+}
+.paint-cp-row input[type="number"] { width: 100%; }
+.paint-cp-row input[type="text"] { width: 100%; }
+
+
+/* ---------- 8. PALETTE --------------------------------------------------- */
+.paint-palette {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.paint-palette-cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--p-border);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.paint-palette-cell:hover { transform: scale(1.1); border-color: var(--p-accent); }
+.paint-palette-cell.empty {
+  background:
+    linear-gradient(45deg, transparent 47%, var(--p-fg-3) 47% 53%, transparent 53%);
+}
+
+.paint-recent-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--p-fg-3);
+  margin-bottom: 4px;
+}
+.paint-recent-row {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.paint-recent-cell {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--p-border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.paint-recent-cell:hover { transform: scale(1.2); border-color: var(--p-accent); }
+
+
+/* ---------- 9. LAYERS ---------------------------------------------------- */
+.paint-layer-blend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.paint-layer-blend select {
+  width: 100%;
+}
+.paint-layer-opacity-wrap {
+  display: grid;
+  grid-template-columns: 1fr 4fr 36px;
+  align-items: center;
+  gap: 4px;
+}
+.paint-layer-opacity-wrap label {
+  color: var(--p-fg-2);
+  font-size: 11px;
+}
+.paint-layer-opacity-wrap span {
+  text-align: right;
+  color: var(--p-fg-2);
+  font-size: 11px;
+}
+
+.paint-layer-list {
+  flex: 1;
+  min-height: 80px;
+  overflow-y: auto;
+  background: var(--p-bg-1);
+  border: 1px solid var(--p-border);
+  border-radius: 4px;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+
+.paint-layer-row {
+  display: grid;
+  grid-template-columns: 18px 36px 1fr 18px;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 1px;
+  border: 1px solid transparent;
+}
+.paint-layer-row:hover { background: var(--p-bg-3); }
+.paint-layer-row.active {
+  background: rgba(79,142,247,0.2);
+  border-color: var(--p-accent);
+}
+.paint-layer-row.dragging { opacity: 0.5; }
+.paint-layer-row.drop-above { box-shadow: 0 -2px 0 0 var(--p-accent); }
+.paint-layer-row.drop-below { box-shadow: 0 2px 0 0 var(--p-accent); }
+
+.paint-layer-vis {
+  width: 16px; height: 16px;
+  display: grid; place-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--p-fg-1);
+}
+.paint-layer-vis.off { color: var(--p-fg-3); opacity: 0.4; }
+
+.paint-layer-thumb {
+  width: 32px;
+  height: 28px;
+  border: 1px solid var(--p-border);
+  background:
+    repeating-conic-gradient(#777 0% 25%, #aaa 0% 50%) 0 0/8px 8px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.paint-layer-thumb canvas { display: block; width: 100%; height: 100%; }
+
+.paint-layer-name {
+  color: var(--p-fg-1);
+  font-size: 11px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.paint-layer-name input {
+  width: 100%;
+  font-size: 11px;
+  padding: 1px 4px;
+}
+
+.paint-layer-lock {
+  width: 16px; height: 16px;
+  display: grid; place-items: center;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--p-fg-3);
+}
+.paint-layer-lock.on { color: var(--p-warn); }
+
+.paint-layer-actions {
+  display: flex;
+  gap: 2px;
+  margin-top: 4px;
+}
+.paint-layer-actions button {
+  flex: 1;
+  height: 24px;
+  padding: 0 !important;
+  font-size: 12px !important;
+  display: grid; place-items: center;
+}
+
+
+/* ---------- 10. STATUS BAR ----------------------------------------------- */
+.paint-statusbar {
+  flex: 0 0 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  background: var(--p-bg-2);
+  border-top: 1px solid var(--p-border);
+  gap: 6px;
+  font-size: 11px;
+  color: var(--p-fg-2);
+}
+.paint-status-divider { color: var(--p-fg-3); opacity: 0.5; }
+.paint-status-spacer { flex: 1; }
+.paint-status-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.paint-status-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid var(--p-border-hi);
+}
+
+
+/* ---------- 11. FLOATING MENUS ------------------------------------------- */
+.paint-floating-menu {
+  position: fixed;
+  z-index: 9999;
+  background: var(--p-bg-3);
+  border: 1px solid var(--p-border-hi);
+  border-radius: 4px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+  min-width: 220px;
+  padding: 4px 0;
+  font-size: 12px;
+}
+.paint-fm-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 14px 4px 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+.paint-fm-item:hover { background: var(--p-accent); color: white; }
+.paint-fm-item.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.paint-fm-item .paint-fm-kbd {
+  margin-left: auto;
+  padding-left: 24px;
+  color: var(--p-fg-3);
+  font-size: 11px;
+}
+.paint-fm-item:hover .paint-fm-kbd { color: rgba(255,255,255,0.85); }
+.paint-fm-sep {
+  border-top: 1px solid var(--p-border);
+  margin: 4px 0;
+}
+.paint-fm-check {
+  position: absolute;
+  left: 8px;
+}
+
+
+/* ---------- 12. MODALS --------------------------------------------------- */
+.paint-modal-root {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  z-index: 9000;
+}
+.paint-modal {
+  background: var(--p-bg-2);
+  border: 1px solid var(--p-border-hi);
+  border-radius: 6px;
+  box-shadow: 0 12px 42px rgba(0,0,0,0.6);
+  min-width: 320px;
+  max-width: 480px;
+}
+.paint-modal-head {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--p-border);
+  font-weight: 600;
+}
+.paint-modal-body {
+  padding: 14px;
+}
+.paint-modal-foot {
+  padding: 10px 14px;
+  border-top: 1px solid var(--p-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.paint-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.paint-modal .primary {
+  background: var(--p-accent);
+  color: white;
+  border-color: var(--p-accent);
+}
+.paint-modal .primary:hover { background: #6aa3ff; }
+
+
+/* ---------- 13. SELECTION MARCHING ANTS --------------------------------- */
+@keyframes paint-marching {
+  to { stroke-dashoffset: -8; }
+}
+
+/* ---------- 14. RESPONSIVE TIGHTENING ----------------------------------- */
+@media (max-width: 900px) {
+  .paint-rightcol { flex: 0 0 200px; }
+  .paint-toolbar { flex: 0 0 48px; }
+  .paint-tool { width: 36px !important; height: 32px !important; font-size: 14px !important; }
+}
+@media (max-width: 720px) {
+  .paint-rightcol { display: none; }
+}
+
+/* ---------- 15. SCROLLBAR THEMING --------------------------------------- */
+.paint-app *::-webkit-scrollbar { width: 8px; height: 8px; }
+.paint-app *::-webkit-scrollbar-track { background: var(--p-bg-1); }
+.paint-app *::-webkit-scrollbar-thumb { background: var(--p-bg-4); border-radius: 4px; }
+.paint-app *::-webkit-scrollbar-thumb:hover { background: var(--p-bg-hi); }
+
+
+/* ---------- 16. UTILITIES ----------------------------------------------- */
+.paint-app .visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.paint-app .paint-no-pick { pointer-events: none !important; }
+
+.paint-app[data-tool="hand"] .paint-viewport,
+.paint-app[data-tool="hand"] .paint-stage { cursor: grab; }
+.paint-app[data-tool="zoom"] .paint-viewport,
+.paint-app[data-tool="zoom"] .paint-stage { cursor: zoom-in; }
+.paint-app[data-tool="zoom"][data-modkey="alt"] .paint-viewport,
+.paint-app[data-tool="zoom"][data-modkey="alt"] .paint-stage { cursor: zoom-out; }
+.paint-app[data-tool="text"] .paint-stage { cursor: text; }
+.paint-app[data-tool="eyedropper"] .paint-stage { cursor: crosshair; }
+.paint-app[data-tool="fill"] .paint-stage { cursor: cell; }
+.paint-app[data-tool="select"] .paint-stage { cursor: crosshair; }
+.paint-app[data-tool="move"] .paint-stage { cursor: move; }
+.paint-app[data-tool="pencil"] .paint-stage,
+.paint-app[data-tool="brush"] .paint-stage,
+.paint-app[data-tool="eraser"] .paint-stage,
+.paint-app[data-tool="rect"] .paint-stage,
+.paint-app[data-tool="ellipse"] .paint-stage,
+.paint-app[data-tool="line"] .paint-stage,
+.paint-app[data-tool="triangle"] .paint-stage,
+.paint-app[data-tool="polygon"] .paint-stage,
+.paint-app[data-tool="star"] .paint-stage { cursor: crosshair; }
+
+
+/* ---------- 17. ICON STATES --------------------------------------------- */
+.paint-tool[data-tool="pencil"]    { font-family: "Inter", system-ui, sans-serif; }
+.paint-tool[data-tool="text"]      { font-weight: 700; }
+.paint-tool[data-tool="rect"]      { font-size: 18px !important; }
+.paint-tool[data-tool="ellipse"]   { font-size: 18px !important; }
+.paint-tool[data-tool="triangle"]  { font-size: 18px !important; }
+.paint-tool[data-tool="polygon"]   { font-size: 16px !important; }
+.paint-tool[data-tool="star"]      { font-size: 18px !important; }
+
+
+/* ---------- 18. FOCUS RING ---------------------------------------------- */
+.paint-app input:focus,
+.paint-app select:focus,
+.paint-app button:focus-visible {
+  outline: 2px solid var(--p-accent);
+  outline-offset: -1px;
+}
+
+
+/* ---------- 19. DISABLED OPTIONS ---------------------------------------- */
+.paint-option.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(0.4);
+}
+
+
+/* ---------- 20. EXTRA POLISH -------------------------------------------- */
+.paint-tool::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.paint-tool.active::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 60%);
+}
+
+.paint-app .paint-grow { flex: 1; }
+.paint-app .paint-shrink { flex: 0 0 auto; }
+.paint-app .paint-row { display: flex; align-items: center; gap: 6px; }
+.paint-app .paint-col { display: flex; flex-direction: column; gap: 6px; }

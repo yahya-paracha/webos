@@ -1,0 +1,96 @@
+<!-- ============================================================================
+     WebOS — OsStore (App Store)
+     ----------------------------------------------------------------------------
+     Cloned by js/appStore.js at window creation time.
+     ========================================================================== -->
+<template id="appstore-app-template">
+  <div class="os-root">
+
+    <!-- ===================== TOP NAVIGATION ===================== -->
+    <header class="os-nav">
+      <div class="os-brand">
+        <span class="os-brand-icon">🛍</span>
+        <span class="os-brand-name">OsStore</span>
+      </div>
+      <div class="os-search-wrap">
+        <span class="os-search-ico">🔎</span>
+        <input type="search" class="os-search" data-ref="search" placeholder="Search apps, developers, tags…" aria-label="Search apps" />
+        <button class="os-search-clear" data-ref="searchClear" title="Clear" aria-label="Clear search" hidden>✕</button>
+      </div>
+      <div class="os-nav-actions">
+        <button class="os-nav-btn" data-ref="refreshBtn" title="Refresh catalog">↻</button>
+        <button class="os-nav-btn" data-ref="installedBtn" title="Installed apps">
+          <span>📦</span>
+          <span class="os-nav-label">My Apps</span>
+          <span class="os-badge" data-ref="installedCount" hidden>0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== CATEGORY PILLS ===================== -->
+    <nav class="os-pills" data-ref="pills" aria-label="Categories"></nav>
+
+    <!-- ===================== MAIN LAYOUT ===================== -->
+    <div class="os-body">
+      <!-- Main content -->
+      <main class="os-main">
+        <!-- Hero carousel -->
+        <section class="os-hero" data-ref="hero" aria-label="Featured apps">
+          <div class="os-hero-slides" data-ref="heroSlides"></div>
+          <div class="os-hero-dots" data-ref="heroDots"></div>
+          <button class="os-hero-arrow prev" data-ref="heroPrev" aria-label="Previous featured">‹</button>
+          <button class="os-hero-arrow next" data-ref="heroNext" aria-label="Next featured">›</button>
+        </section>
+
+        <!-- Content sections -->
+        <section class="os-section" data-section="main">
+          <div class="os-section-head">
+            <h2 class="os-section-title" data-ref="gridTitle">Discover</h2>
+            <div class="os-section-sub" data-ref="gridSub">Hand-picked apps for every workflow</div>
+          </div>
+          <div class="os-grid" data-ref="grid"></div>
+          <div class="os-empty" data-ref="gridEmpty" hidden>
+            <div class="os-empty-ico">🔍</div>
+            <div class="os-empty-title">No results</div>
+            <div class="os-empty-text">Try a different keyword or category.</div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Sidebar (right) -->
+      <aside class="os-side">
+        <section class="os-side-section">
+          <div class="os-side-head">
+            <h3>Top Free</h3>
+            <span class="os-side-sub">Most installs</span>
+          </div>
+          <ol class="os-chart" data-ref="chartTop"></ol>
+        </section>
+
+        <section class="os-side-section">
+          <div class="os-side-head">
+            <h3>Top Rated</h3>
+            <span class="os-side-sub">Best reviews</span>
+          </div>
+          <ol class="os-chart" data-ref="chartRated"></ol>
+        </section>
+
+        <section class="os-side-section">
+          <div class="os-side-head">
+            <h3>Recent Releases</h3>
+            <span class="os-side-sub">New this month</span>
+          </div>
+          <ol class="os-chart" data-ref="chartRecent"></ol>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ===================== DETAIL VIEW (slide-in panel) ===================== -->
+    <div class="os-detail" data-ref="detail" hidden role="dialog" aria-label="App details">
+      <div class="os-detail-inner" data-ref="detailInner"></div>
+    </div>
+
+    <!-- ===================== TOAST SHIM (local notices) ===================== -->
+    <div class="os-local-toasts" data-ref="localToasts" aria-live="polite"></div>
+  </div>
+</template>

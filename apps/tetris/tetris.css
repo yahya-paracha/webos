@@ -1,0 +1,340 @@
+/* ============================================================================
+ * OsTetris — tetris.css
+ * Neon/dark arcade aesthetic with glowing tetromino colors.
+ * ==========================================================================*/
+
+.tetris-app {
+  --tt-bg:     #0a0e1f;
+  --tt-bg2:    #11162e;
+  --tt-panel:  rgba(20, 26, 50, 0.85);
+  --tt-border: rgba(120, 130, 220, 0.35);
+  --tt-text:   #e6e9ff;
+  --tt-dim:    rgba(230, 233, 255, 0.55);
+  --tt-glow1:  #06b6d4;
+  --tt-glow2:  #7c3aed;
+
+  --tt-c-i: #00ddff; /* I cyan */
+  --tt-c-o: #ffd700; /* O yellow */
+  --tt-c-t: #b400ff; /* T purple */
+  --tt-c-s: #00e676; /* S green  */
+  --tt-c-z: #ff3344; /* Z red    */
+  --tt-c-j: #2962ff; /* J blue   */
+  --tt-c-l: #ff8a00; /* L orange */
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(124,58,237,0.20) 0%, transparent 60%),
+    radial-gradient(900px 600px at 80% 90%, rgba(6,182,212,0.18) 0%, transparent 65%),
+    linear-gradient(180deg, var(--tt-bg) 0%, var(--tt-bg2) 100%);
+  color: var(--tt-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Toolbar ================================================================= */
+.tt-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid var(--tt-border);
+  flex-shrink: 0;
+}
+.tt-toolbar .tt-spacer { flex: 1 1 auto; }
+.tt-btn {
+  background: rgba(255,255,255,0.04);
+  color: var(--tt-text);
+  border: 1px solid var(--tt-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s, border-color .15s;
+}
+.tt-btn:hover {
+  background: rgba(124,58,237,0.18);
+  border-color: var(--tt-glow2);
+  box-shadow: 0 0 14px rgba(124,58,237,0.35);
+}
+.tt-btn-primary {
+  background: linear-gradient(180deg, var(--tt-glow2), #4f1ea3);
+  border-color: var(--tt-glow2);
+  color: white;
+  box-shadow: 0 0 18px rgba(124,58,237,0.45);
+}
+.tt-btn-primary:hover { filter: brightness(1.12); }
+.tt-btn-icon { padding: 6px 10px; font-size: 15px; }
+.tt-select {
+  background: rgba(255,255,255,0.04);
+  color: var(--tt-text);
+  border: 1px solid var(--tt-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Stage ================================================================== */
+.tt-stage {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px;
+  gap: 14px;
+  padding: 14px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tt-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.tt-panel {
+  background: var(--tt-panel);
+  border: 1px solid var(--tt-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.tt-panel-title {
+  font-family: 'Press Start 2P', 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--tt-glow1);
+  text-shadow: 0 0 10px rgba(6,182,212,0.55);
+}
+
+.tt-num {
+  font-family: 'Press Start 2P', 'JetBrains Mono', monospace;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: white;
+  text-shadow:
+    0 0 8px var(--tt-glow2),
+    0 0 16px rgba(124,58,237,0.6);
+}
+.tt-num.small { font-size: 18px; }
+
+.tt-mini {
+  width: 100%;
+  max-width: 120px;
+  aspect-ratio: 3 / 2;
+  background: rgba(0,0,0,0.45);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+#tt-hold { aspect-ratio: 1; }
+
+/* Center / board ========================================================= */
+.tt-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tt-board-wrap {
+  position: relative;
+  display: inline-block;
+  border-radius: 10px;
+  padding: 4px;
+  background: linear-gradient(135deg, rgba(124,58,237,0.5), rgba(6,182,212,0.5));
+  box-shadow:
+    0 0 24px rgba(124,58,237,0.45),
+    0 0 48px rgba(6,182,212,0.25);
+}
+.tt-board {
+  display: block;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(20,26,50,0.95) 0%, rgba(8,10,22,1) 100%);
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+
+.tt-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  z-index: 10;
+}
+.tt-ov-card {
+  background: rgba(20,26,50,0.95);
+  border: 1px solid var(--tt-border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  text-align: center;
+  min-width: 240px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+}
+.tt-ov-card h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  margin: 0 0 12px;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--tt-glow1), var(--tt-glow2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tt-ov-card p { margin: 6px 0 14px; color: var(--tt-dim); }
+.tt-ov-card kbd {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--tt-border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.tt-ov-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+.tt-ov-stat {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 8px;
+}
+.tt-ov-stat span { display: block; font-size: 11px; opacity: .65; letter-spacing: 1px; }
+.tt-ov-stat b    { font-family: 'JetBrains Mono', monospace; font-size: 18px; color: var(--tt-glow1); }
+.tt-ov-rank {
+  font-weight: 700;
+  color: var(--tt-glow2);
+  text-shadow: 0 0 10px rgba(124,58,237,0.5);
+}
+
+/* Footer controls ======================================================= */
+.tt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--tt-dim);
+  border-top: 1px solid var(--tt-border);
+  background: rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+.tt-controls kbd {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--tt-border);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-right: 2px;
+}
+
+/* Modal ================================================================== */
+.tt-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.tt-modal {
+  background: rgba(20,26,50,0.97);
+  border: 1px solid var(--tt-border);
+  border-radius: 12px;
+  padding: 22px;
+  min-width: 320px;
+  max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+}
+.tt-modal h3 {
+  margin: 0 0 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--tt-glow1);
+}
+.tt-scores-list {
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.tt-score-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 70px 90px;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+}
+.tt-score-row .tt-rank { font-weight: 700; color: var(--tt-glow2); }
+.tt-score-row .tt-pts  { text-align: right; color: var(--tt-glow1); font-weight: 700; }
+.tt-score-row .tt-when { color: var(--tt-dim); text-align: right; }
+.tt-set-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Floating score popups ================================================== */
+.tt-floater {
+  position: absolute;
+  pointer-events: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--tt-glow1);
+  text-shadow: 0 0 8px var(--tt-glow1);
+  animation: tt-floatup 1s ease-out forwards;
+  z-index: 5;
+}
+@keyframes tt-floatup {
+  0%   { transform: translateY(0);   opacity: 1; }
+  100% { transform: translateY(-50px); opacity: 0; }
+}
+
+/* Line clear flash ======================================================= */
+.tt-line-flash {
+  position: absolute;
+  background: rgba(255,255,255,0.85);
+  pointer-events: none;
+  animation: tt-lineflash .35s ease-out forwards;
+  z-index: 4;
+}
+@keyframes tt-lineflash {
+  0%   { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(0.05); }
+}
+
+/* Compact responsive ==================================================== */
+@media (max-width: 760px) {
+  .tt-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .tt-side { flex-direction: row; flex-wrap: wrap; }
+  .tt-panel { flex: 1 1 120px; }
+}

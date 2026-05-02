@@ -1,0 +1,283 @@
+<!--
+  CalcPro — WebOS Calculator
+  Injected into a WebOS window body by js/calculator.js.
+  All IDs scoped with `cp-` to avoid collisions.
+-->
+<div class="cp-root" data-cp-root>
+  <!-- ==== MODE TABS ==== -->
+  <div class="cp-tabs" role="tablist">
+    <button class="cp-tab is-active" data-mode="standard"   role="tab">Standard</button>
+    <button class="cp-tab"            data-mode="scientific" role="tab">Scientific</button>
+    <button class="cp-tab"            data-mode="programmer" role="tab">Programmer</button>
+    <button class="cp-tab"            data-mode="unit"       role="tab">Unit Converter</button>
+    <button class="cp-tab"            data-mode="currency"   role="tab">Currency</button>
+    <span class="cp-tab-spacer"></span>
+    <button class="cp-icon-btn" data-cp-history-toggle title="History">🕓</button>
+  </div>
+
+  <div class="cp-main">
+    <!-- ==== DISPLAY ==== -->
+    <div class="cp-display-area">
+      <div class="cp-display-expr" data-cp-expr>&nbsp;</div>
+      <div class="cp-display-main" data-cp-display>0</div>
+      <div class="cp-display-meta">
+        <span class="cp-mem-indicator" data-cp-mem-indicator hidden>M</span>
+        <span class="cp-mode-label" data-cp-mode-label>Standard</span>
+      </div>
+    </div>
+
+    <!-- ==== MODE PANELS (only one active) ==== -->
+    <div class="cp-panels" data-cp-panels>
+
+      <!-- --- STANDARD --- -->
+      <div class="cp-panel cp-panel-standard is-active" data-panel="standard">
+        <div class="cp-mem-row">
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MC">MC</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MR">MR</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="M+">M+</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="M-">M−</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MS">MS</button>
+        </div>
+        <div class="cp-grid cp-grid-std">
+          <button class="cp-btn cp-btn-fn"  data-cp-key="%"      >%</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="CE"     >CE</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="C"      >C</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="BACK"   >⌫</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="1/x"    >1/x</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="x^2"    >x²</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="sqrt"   >√x</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="/"      >÷</button>
+
+          <button class="cp-btn cp-btn-num" data-cp-key="7"      >7</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="8"      >8</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="9"      >9</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="*"      >×</button>
+
+          <button class="cp-btn cp-btn-num" data-cp-key="4"      >4</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="5"      >5</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="6"      >6</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="-"      >−</button>
+
+          <button class="cp-btn cp-btn-num" data-cp-key="1"      >1</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="2"      >2</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="3"      >3</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="+"      >+</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="neg"    >±</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="0"      >0</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="."      >.</button>
+          <button class="cp-btn cp-btn-eq"  data-cp-key="="      >=</button>
+        </div>
+      </div>
+
+      <!-- --- SCIENTIFIC --- -->
+      <div class="cp-panel cp-panel-sci" data-panel="scientific">
+        <div class="cp-sci-header">
+          <button class="cp-chip" data-cp-angle="deg">DEG</button>
+          <button class="cp-chip is-active" data-cp-angle="rad">RAD</button>
+          <button class="cp-chip" data-cp-hyp>HYP</button>
+          <button class="cp-chip" data-cp-inv>INV</button>
+        </div>
+        <div class="cp-mem-row">
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MC">MC</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MR">MR</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="M+">M+</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="M-">M−</button>
+          <button class="cp-btn cp-btn-mem" data-cp-mem="MS">MS</button>
+        </div>
+        <div class="cp-grid cp-grid-sci">
+          <button class="cp-btn cp-btn-fn"  data-cp-key="2nd"   >2nd</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="pi"    >π</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="e"     >e</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="C"     >C</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="BACK"  >⌫</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="x^2"   >x²</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="x^3"   >x³</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="x^y"   >xʸ</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="exp"   >exp</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="abs"   >|x|</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="sqrt"  >√x</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="cbrt"  >∛x</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="yroot" >ʸ√x</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="ln"    >ln</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="log"   >log</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="sin"   >sin</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="cos"   >cos</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="tan"   >tan</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="log2"  >log₂</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="fact"  >n!</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="asin"  >sin⁻¹</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="acos"  >cos⁻¹</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="atan"  >tan⁻¹</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="1/x"   >1/x</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="%"     >%</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="("     >(</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key=")"     >)</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="7"     >7</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="8"     >8</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="9"     >9</button>
+
+          <button class="cp-btn cp-btn-op"  data-cp-key="/"     >÷</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="*"     >×</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="4"     >4</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="5"     >5</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="6"     >6</button>
+
+          <button class="cp-btn cp-btn-op"  data-cp-key="+"     >+</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="-"     >−</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="1"     >1</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="2"     >2</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="3"     >3</button>
+
+          <button class="cp-btn cp-btn-fn"  data-cp-key="neg"   >±</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="0"     >0</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="."     >.</button>
+          <button class="cp-btn cp-btn-eq"  data-cp-key="="     style="grid-column:span 2;">=</button>
+        </div>
+      </div>
+
+      <!-- --- PROGRAMMER --- -->
+      <div class="cp-panel cp-panel-prog" data-panel="programmer">
+        <div class="cp-prog-views">
+          <div class="cp-prog-row" data-cp-prog-row="HEX"><span class="cp-prog-label">HEX</span><span class="cp-prog-value" data-cp-prog-value="HEX">0</span></div>
+          <div class="cp-prog-row is-active" data-cp-prog-row="DEC"><span class="cp-prog-label">DEC</span><span class="cp-prog-value" data-cp-prog-value="DEC">0</span></div>
+          <div class="cp-prog-row" data-cp-prog-row="OCT"><span class="cp-prog-label">OCT</span><span class="cp-prog-value" data-cp-prog-value="OCT">0</span></div>
+          <div class="cp-prog-row" data-cp-prog-row="BIN"><span class="cp-prog-label">BIN</span><span class="cp-prog-value" data-cp-prog-value="BIN">0</span></div>
+        </div>
+        <div class="cp-sci-header">
+          <button class="cp-chip" data-cp-base="HEX">HEX</button>
+          <button class="cp-chip is-active" data-cp-base="DEC">DEC</button>
+          <button class="cp-chip" data-cp-base="OCT">OCT</button>
+          <button class="cp-chip" data-cp-base="BIN">BIN</button>
+          <span class="cp-spacer"></span>
+          <button class="cp-chip" data-cp-word="8"  >QWORD</button>
+          <button class="cp-chip" data-cp-word="16" >16</button>
+          <button class="cp-chip" data-cp-word="32" is-active>32</button>
+          <button class="cp-chip is-active" data-cp-word="64" >64</button>
+        </div>
+        <div class="cp-grid cp-grid-prog">
+          <button class="cp-btn cp-btn-fn" data-cp-key="A"   >A</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="B"   >B</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="C_HEX">C</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="D"   >D</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="E"   >E</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="F"   >F</button>
+
+          <button class="cp-btn cp-btn-fn" data-cp-key="AND" >AND</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="OR"  >OR</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="XOR" >XOR</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="NOT" >NOT</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="LSH" >≪</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="RSH" >≫</button>
+
+          <button class="cp-btn cp-btn-fn" data-cp-key="C"   >C</button>
+          <button class="cp-btn cp-btn-fn" data-cp-key="BACK">⌫</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="7"  >7</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="8"  >8</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="9"  >9</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="/"  >÷</button>
+
+          <button class="cp-btn cp-btn-op"  data-cp-key="*"  >×</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="%"  >%</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="4"  >4</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="5"  >5</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="6"  >6</button>
+          <button class="cp-btn cp-btn-op"  data-cp-key="-"  >−</button>
+
+          <button class="cp-btn cp-btn-op"  data-cp-key="+"  >+</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-key="neg">±</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="1"  >1</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="2"  >2</button>
+          <button class="cp-btn cp-btn-num" data-cp-key="3"  >3</button>
+          <button class="cp-btn cp-btn-eq"  data-cp-key="="  style="grid-row:span 2;">=</button>
+
+          <button class="cp-btn cp-btn-num" data-cp-key="0"  style="grid-column:span 5;">0</button>
+        </div>
+      </div>
+
+      <!-- --- UNIT CONVERTER --- -->
+      <div class="cp-panel cp-panel-unit" data-panel="unit">
+        <div class="cp-unit-cat-row">
+          <label class="cp-field-label">Category</label>
+          <select class="cp-select" data-cp-unit-cat>
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="temperature">Temperature</option>
+            <option value="area">Area</option>
+            <option value="volume">Volume</option>
+            <option value="speed">Speed</option>
+            <option value="time">Time</option>
+            <option value="data">Data Storage</option>
+          </select>
+        </div>
+        <div class="cp-unit-row">
+          <div class="cp-unit-col">
+            <select class="cp-select" data-cp-unit-from></select>
+            <input type="text" class="cp-input cp-unit-input" data-cp-unit-from-val value="1" />
+          </div>
+          <div class="cp-unit-arrow" data-cp-unit-swap title="Swap">⇌</div>
+          <div class="cp-unit-col">
+            <select class="cp-select" data-cp-unit-to></select>
+            <input type="text" class="cp-input cp-unit-input" data-cp-unit-to-val value="0" readonly />
+          </div>
+        </div>
+        <div class="cp-unit-info" data-cp-unit-info></div>
+        <div class="cp-grid cp-grid-unit">
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="7">7</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="8">8</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="9">9</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-unit-key="C">C</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="4">4</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="5">5</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="6">6</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-unit-key="BACK">⌫</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="1">1</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="2">2</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="3">3</button>
+          <button class="cp-btn cp-btn-fn"  data-cp-unit-key="neg">±</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key="0" style="grid-column:span 2;">0</button>
+          <button class="cp-btn cp-btn-num" data-cp-unit-key=".">.</button>
+          <button class="cp-btn cp-btn-eq"  data-cp-unit-key="COPY">Copy</button>
+        </div>
+      </div>
+
+      <!-- --- CURRENCY --- -->
+      <div class="cp-panel cp-panel-curr" data-panel="currency">
+        <div class="cp-unit-row">
+          <div class="cp-unit-col">
+            <select class="cp-select" data-cp-curr-from></select>
+            <input type="text" class="cp-input cp-unit-input" data-cp-curr-from-val value="1" />
+          </div>
+          <div class="cp-unit-arrow" data-cp-curr-swap title="Swap">⇌</div>
+          <div class="cp-unit-col">
+            <select class="cp-select" data-cp-curr-to></select>
+            <input type="text" class="cp-input cp-unit-input" data-cp-curr-to-val value="0" readonly />
+          </div>
+        </div>
+        <div class="cp-unit-info">
+          Rates last updated: <span data-cp-curr-date></span> (static offline table)
+        </div>
+        <div class="cp-curr-table" data-cp-curr-table></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==== HISTORY PANEL ==== -->
+  <aside class="cp-history" data-cp-history hidden>
+    <div class="cp-history-head">
+      <span>History</span>
+      <button class="cp-icon-btn" data-cp-history-clear title="Clear all">🗑</button>
+      <button class="cp-icon-btn" data-cp-history-close title="Close">✕</button>
+    </div>
+    <div class="cp-history-list" data-cp-history-list>
+      <div class="cp-history-empty">No calculations yet.</div>
+    </div>
+  </aside>
+</div>

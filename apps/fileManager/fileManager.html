@@ -1,0 +1,222 @@
+<!--
+  ============================================================================
+  WebOS — File Manager App Body
+  ----------------------------------------------------------------------------
+  This file contains the inner HTML of the File Manager window. It is loaded
+  by js/fileManager.js via fetch() and injected into the body of a managed
+  WindowManager window. All wiring happens in JavaScript; this file is purely
+  the static skeleton.
+  ============================================================================
+-->
+<div class="fm-root" data-view="grid" data-show-preview="false">
+
+  <!-- ============================== TOP TOOLBAR ============================ -->
+  <header class="fm-toolbar" role="toolbar" aria-label="File manager toolbar">
+    <div class="fm-tb-group fm-tb-nav">
+      <button class="fm-tb-btn"  data-act="back"     title="Back (Alt+Left)"     aria-label="Back">
+        <span class="fm-tb-ico">◀</span>
+      </button>
+      <button class="fm-tb-btn"  data-act="forward"  title="Forward (Alt+Right)" aria-label="Forward">
+        <span class="fm-tb-ico">▶</span>
+      </button>
+      <button class="fm-tb-btn"  data-act="up"       title="Up one level (Backspace)" aria-label="Up">
+        <span class="fm-tb-ico">▲</span>
+      </button>
+      <button class="fm-tb-btn"  data-act="refresh"  title="Refresh (F5)" aria-label="Refresh">
+        <span class="fm-tb-ico">⟳</span>
+      </button>
+    </div>
+
+    <div class="fm-tb-group fm-tb-path-group">
+      <div class="fm-breadcrumbs" id="fm-breadcrumbs" role="navigation" aria-label="Path">
+        <!-- crumbs are inserted by JS -->
+      </div>
+    </div>
+
+    <div class="fm-tb-group fm-tb-search">
+      <span class="fm-search-ico" aria-hidden="true">🔎</span>
+      <input
+        type="text"
+        class="fm-search-input"
+        id="fm-search"
+        placeholder="Search current folder…"
+        aria-label="Search current folder"
+        autocomplete="off"
+      />
+      <button class="fm-tb-btn fm-search-clear" data-act="search-clear" title="Clear search" aria-label="Clear search" hidden>✕</button>
+    </div>
+
+    <div class="fm-tb-group fm-tb-view">
+      <button class="fm-tb-btn"        data-act="view-grid" title="Grid view" aria-label="Grid view">
+        <span class="fm-tb-ico">▦</span>
+      </button>
+      <button class="fm-tb-btn"        data-act="view-list" title="List view" aria-label="List view">
+        <span class="fm-tb-ico">≡</span>
+      </button>
+      <button class="fm-tb-btn"        data-act="toggle-preview" title="Toggle preview" aria-label="Toggle preview">
+        <span class="fm-tb-ico">▤</span>
+      </button>
+    </div>
+
+    <div class="fm-tb-group fm-tb-sort">
+      <label class="fm-sort-label" for="fm-sort">Sort</label>
+      <select class="fm-sort-select" id="fm-sort" aria-label="Sort by">
+        <option value="name">Name</option>
+        <option value="size">Size</option>
+        <option value="modified">Date modified</option>
+        <option value="type">Type</option>
+        <option value="ext">Extension</option>
+      </select>
+      <button class="fm-tb-btn fm-sort-dir" data-act="sort-dir" title="Toggle sort direction" aria-label="Toggle sort direction">
+        <span class="fm-tb-ico" id="fm-sort-dir-ico">↑</span>
+      </button>
+    </div>
+
+    <div class="fm-tb-group fm-tb-actions">
+      <button class="fm-tb-btn"  data-act="new-folder"  title="New folder (Ctrl+Shift+N)" aria-label="New folder">
+        <span class="fm-tb-ico">📁</span><span class="fm-tb-text">New</span>
+      </button>
+      <button class="fm-tb-btn"  data-act="new-file"    title="New text file" aria-label="New file">
+        <span class="fm-tb-ico">📝</span>
+      </button>
+      <button class="fm-tb-btn"  data-act="upload"      title="Upload" aria-label="Upload">
+        <span class="fm-tb-ico">⬆</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================== BODY ============================ -->
+  <div class="fm-body">
+
+    <!-- Sidebar -->
+    <aside class="fm-sidebar" id="fm-sidebar" aria-label="Quick access">
+      <section class="fm-side-section">
+        <h4 class="fm-side-title">Quick access</h4>
+        <ul class="fm-side-list" id="fm-side-quick">
+          <li class="fm-side-item" data-path="/Desktop"   data-icon="🖥"><span class="fm-side-ico">🖥</span><span class="fm-side-label">Desktop</span></li>
+          <li class="fm-side-item" data-path="/Documents" data-icon="📄"><span class="fm-side-ico">📄</span><span class="fm-side-label">Documents</span></li>
+          <li class="fm-side-item" data-path="/Downloads" data-icon="⬇"><span class="fm-side-ico">⬇</span><span class="fm-side-label">Downloads</span></li>
+          <li class="fm-side-item" data-path="/Pictures"  data-icon="🖼"><span class="fm-side-ico">🖼</span><span class="fm-side-label">Pictures</span></li>
+          <li class="fm-side-item" data-path="/Music"     data-icon="🎵"><span class="fm-side-ico">🎵</span><span class="fm-side-label">Music</span></li>
+        </ul>
+      </section>
+
+      <section class="fm-side-section">
+        <h4 class="fm-side-title">This PC</h4>
+        <ul class="fm-side-list" id="fm-side-drives">
+          <li class="fm-side-item" data-path="/" data-icon="💽">
+            <span class="fm-side-ico">💽</span>
+            <span class="fm-side-label">Local Disk (C:)</span>
+            <span class="fm-side-meta" id="fm-side-disk-usage">—</span>
+          </li>
+          <li class="fm-side-item" data-path="/System" data-icon="⚙">
+            <span class="fm-side-ico">⚙</span>
+            <span class="fm-side-label">System</span>
+            <span class="fm-side-tag">read-only</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="fm-side-section">
+        <h4 class="fm-side-title">Bookmarks</h4>
+        <ul class="fm-side-list" id="fm-side-bookmarks">
+          <!-- inserted dynamically -->
+        </ul>
+        <button class="fm-side-add" id="fm-bookmark-add" title="Bookmark current folder">
+          <span>＋</span><span>Add current folder</span>
+        </button>
+      </section>
+
+      <section class="fm-side-section">
+        <h4 class="fm-side-title">System</h4>
+        <ul class="fm-side-list" id="fm-side-system">
+          <li class="fm-side-item" data-path="/Trash" data-icon="🗑">
+            <span class="fm-side-ico">🗑</span>
+            <span class="fm-side-label">Recycle Bin</span>
+            <span class="fm-side-meta" id="fm-side-trash-count">0</span>
+          </li>
+        </ul>
+      </section>
+    </aside>
+
+    <!-- Main panel: file/folder grid + list view -->
+    <main class="fm-main" id="fm-main">
+
+      <!-- Drop / drag overlay -->
+      <div class="fm-drop-overlay" id="fm-drop-overlay" hidden>
+        <div class="fm-drop-card">
+          <div class="fm-drop-ico">📥</div>
+          <div class="fm-drop-text">Drop here to move</div>
+        </div>
+      </div>
+
+      <!-- File list / grid container -->
+      <section class="fm-content" id="fm-content" tabindex="0" aria-label="Files and folders">
+        <div class="fm-empty" id="fm-empty" hidden>
+          <div class="fm-empty-ico">📂</div>
+          <div class="fm-empty-title">This folder is empty</div>
+          <div class="fm-empty-sub">Drag files here, or use the toolbar to create something new.</div>
+        </div>
+
+        <div class="fm-grid" id="fm-grid" role="list">
+          <!-- file/folder grid items inserted by JS -->
+        </div>
+
+        <table class="fm-list" id="fm-list" hidden>
+          <thead>
+            <tr>
+              <th data-sort="name">Name<span class="fm-list-arrow"></span></th>
+              <th data-sort="modified">Date modified</th>
+              <th data-sort="type">Type</th>
+              <th data-sort="size">Size</th>
+            </tr>
+          </thead>
+          <tbody id="fm-list-body"></tbody>
+        </table>
+
+        <div class="fm-search-results" id="fm-search-results" hidden>
+          <h4 class="fm-search-title">Search results</h4>
+          <div class="fm-search-list" id="fm-search-list"></div>
+        </div>
+      </section>
+
+      <!-- Right-side preview panel -->
+      <aside class="fm-preview" id="fm-preview" aria-label="Preview" hidden>
+        <header class="fm-prev-head">
+          <div class="fm-prev-icon" id="fm-prev-icon">📄</div>
+          <div class="fm-prev-meta">
+            <div class="fm-prev-name" id="fm-prev-name">No selection</div>
+            <div class="fm-prev-path" id="fm-prev-path">—</div>
+          </div>
+          <button class="fm-prev-close" id="fm-prev-close" title="Hide preview" aria-label="Hide preview">✕</button>
+        </header>
+        <div class="fm-prev-body" id="fm-prev-body">
+          <div class="fm-prev-empty">
+            Select a file to see its preview here.
+          </div>
+        </div>
+        <footer class="fm-prev-foot">
+          <div class="fm-prev-row"><span>Type</span><strong id="fm-prev-type">—</strong></div>
+          <div class="fm-prev-row"><span>Size</span><strong id="fm-prev-size">—</strong></div>
+          <div class="fm-prev-row"><span>Modified</span><strong id="fm-prev-modified">—</strong></div>
+        </footer>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ============================== STATUS BAR ============================ -->
+  <footer class="fm-statusbar" role="status">
+    <div class="fm-st-left">
+      <span id="fm-st-count">0 items</span>
+    </div>
+    <div class="fm-st-mid">
+      <span id="fm-st-selected"></span>
+    </div>
+    <div class="fm-st-right">
+      <span id="fm-st-disk">—</span>
+    </div>
+  </footer>
+
+  <!-- ============================== HIDDEN HELPERS ============================ -->
+  <input type="file" id="fm-file-picker" multiple hidden />
+</div>

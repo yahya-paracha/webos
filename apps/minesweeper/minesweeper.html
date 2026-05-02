@@ -1,0 +1,83 @@
+<!--
+  OsMinesweeper — minesweeper.html
+  Markup template injected into a WindowManager window body.
+  Styled by minesweeper.css; behaviour in js/minesweeper.js.
+-->
+<div class="ms-app" id="ms-root" data-skin="classic">
+
+  <!-- Top toolbar ============================================== -->
+  <div class="ms-toolbar">
+    <select class="ms-select" data-act="diff" title="Difficulty">
+      <option value="beginner" selected>Beginner (9×9·10)</option>
+      <option value="intermediate">Intermediate (16×16·40)</option>
+      <option value="expert">Expert (30×16·99)</option>
+      <option value="custom">Custom…</option>
+    </select>
+    <button class="ms-btn ms-btn-primary" data-act="new" title="New Game (F2)">⟳ New</button>
+    <span class="ms-spacer"></span>
+    <button class="ms-btn ms-btn-icon" data-act="skin" title="Toggle skin">🎨</button>
+    <button class="ms-btn ms-btn-icon" data-act="best" title="Best times">🏆</button>
+    <button class="ms-btn ms-btn-icon" data-act="help" title="How to play">❓</button>
+  </div>
+
+  <!-- Custom difficulty panel =================================== -->
+  <div class="ms-custom" id="ms-custom" hidden>
+    <label>Rows <input type="number" id="ms-rows" min="2" max="50" value="16"></label>
+    <label>Cols <input type="number" id="ms-cols" min="2" max="50" value="16"></label>
+    <label>Mines <input type="number" id="ms-mines" min="1" max="2491" value="40"></label>
+    <button class="ms-btn ms-btn-primary" data-act="apply-custom">Apply</button>
+    <button class="ms-btn" data-act="cancel-custom">Cancel</button>
+  </div>
+
+  <!-- Game header (counter + smiley + timer) ==================== -->
+  <div class="ms-header">
+    <div class="ms-counter" id="ms-counter">000</div>
+    <button class="ms-smiley" id="ms-smiley" data-act="smiley" title="New game">🙂</button>
+    <div class="ms-timer" id="ms-timer">000</div>
+  </div>
+
+  <!-- Game grid ================================================ -->
+  <div class="ms-grid-wrap">
+    <div class="ms-grid" id="ms-grid"></div>
+  </div>
+
+  <!-- Best times panel ========================================== -->
+  <div class="ms-best">
+    <div class="ms-best-row"><span>Beginner</span><b data-best="beginner">—</b></div>
+    <div class="ms-best-row"><span>Intermediate</span><b data-best="intermediate">—</b></div>
+    <div class="ms-best-row"><span>Expert</span><b data-best="expert">—</b></div>
+  </div>
+
+  <!-- Help modal ============================================== -->
+  <div class="ms-modal-backdrop" id="ms-help" hidden>
+    <div class="ms-modal">
+      <h3>How to play</h3>
+      <ul>
+        <li><b>Left-click</b> to reveal a cell.</li>
+        <li><b>Right-click</b> to flag/unflag a suspected mine.</li>
+        <li>A revealed number tells you how many mines are adjacent.</li>
+        <li><b>Chord click</b> (left+right on a number with the right number of flags around it) auto-reveals the rest.</li>
+        <li>The first click is always safe — mines are placed afterwards.</li>
+        <li>Reveal every non-mine cell to win!</li>
+      </ul>
+      <div class="ms-actions">
+        <button class="ms-btn ms-btn-primary" data-act="close-help">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Best-times modal ======================================== -->
+  <div class="ms-modal-backdrop" id="ms-best-modal" hidden>
+    <div class="ms-modal">
+      <h3>Best times</h3>
+      <table class="ms-best-table">
+        <thead><tr><th>Difficulty</th><th>Time</th><th>Date</th></tr></thead>
+        <tbody id="ms-best-body"></tbody>
+      </table>
+      <div class="ms-actions">
+        <button class="ms-btn" data-act="reset-best">Reset</button>
+        <button class="ms-btn ms-btn-primary" data-act="close-best">Done</button>
+      </div>
+    </div>
+  </div>
+</div>

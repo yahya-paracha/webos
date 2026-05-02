@@ -1,0 +1,477 @@
+/* ==========================================================================
+   WebOS — themes.css
+   --------------------------------------------------------------------------
+   Defines CSS custom properties for five themes:
+     - dark      (default)
+     - light
+     - cyberpunk
+     - retro
+     - forest
+   Themes are applied via [data-theme="..."] on <html>.
+   ========================================================================== */
+
+/* ----------  Root tokens shared across all themes  ---------- */
+:root {
+  /* type scale */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-pixel:"Press Start 2P", "Courier New", monospace;
+
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 28px;
+  --fs-3xl: 40px;
+
+  /* spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10:40px;
+  --sp-12:48px;
+
+  /* radii */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-2xl:28px;
+  --r-pill: 999px;
+
+  /* timing */
+  --ease-out: cubic-bezier(.22,.9,.34,1);
+  --ease-in:  cubic-bezier(.7,.05,.78,.4);
+  --ease-spring: cubic-bezier(.5,1.6,.4,1);
+  --dur-fast: 120ms;
+  --dur-med:  220ms;
+  --dur-slow: 420ms;
+
+  /* layering */
+  --z-wallpaper: 0;
+  --z-icons:     5;
+  --z-windows:   10;
+  --z-taskbar:   2000;
+  --z-startmenu: 2100;
+  --z-context:   2500;
+  --z-toast:     3000;
+  --z-boot:      9999;
+
+  /* taskbar geometry */
+  --taskbar-h: 52px;
+}
+
+/* =========================================================
+   DARK (default)
+   ========================================================= */
+:root,
+[data-theme="dark"] {
+  --bg-0: #06080f;
+  --bg-1: #0b1020;
+  --bg-2: #11172b;
+  --bg-3: #1a2140;
+
+  --fg-0: #f5f7ff;
+  --fg-1: #d6dbef;
+  --fg-2: #98a0bf;
+  --fg-3: #5d6688;
+
+  --accent-1: #7c3aed;       /* primary */
+  --accent-2: #06b6d4;       /* secondary */
+  --accent-3: #f472b6;       /* tertiary */
+
+  --grad-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+  --grad-warm:   linear-gradient(135deg, #f472b6 0%, #f59e0b 100%);
+  --grad-cool:   linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+
+  --window-bg: rgba(17, 23, 43, 0.78);
+  --window-border: rgba(255,255,255,0.08);
+  --window-shadow: 0 18px 60px rgba(0,0,0,0.55), 0 4px 14px rgba(0,0,0,0.35);
+  --titlebar-bg: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+  --titlebar-fg: #f5f7ff;
+
+  --taskbar-bg: rgba(11, 16, 32, 0.72);
+  --taskbar-border: rgba(255,255,255,0.07);
+  --taskbar-fg: #e9ecff;
+
+  --start-bg: rgba(15, 20, 38, 0.82);
+  --start-border: rgba(255,255,255,0.08);
+
+  --icon-fg: #f5f7ff;
+  --icon-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  --icon-selected-bg: rgba(124, 58, 237, 0.25);
+  --icon-selected-border: rgba(124, 58, 237, 0.7);
+
+  --hover-bg: rgba(255,255,255,0.06);
+  --active-bg: rgba(255,255,255,0.10);
+
+  --danger: #ef4444;
+  --warn:   #f59e0b;
+  --ok:     #10b981;
+  --info:   #06b6d4;
+
+  --scrollbar-thumb: rgba(255,255,255,0.15);
+  --scrollbar-track: transparent;
+
+  --wallpaper-aurora:
+    radial-gradient(1200px 800px at 10% 10%,  #2a1361 0%, transparent 60%),
+    radial-gradient(1000px 700px at 90% 80%,  #073b4c 0%, transparent 55%),
+    radial-gradient(800px  600px at 70% 20%,  #5b21b6 0%, transparent 60%),
+    linear-gradient(180deg, #06080f 0%, #0b1020 100%);
+  --wallpaper-nebula:
+    radial-gradient(900px 700px at 30% 30%, #ec489922 0%, transparent 60%),
+    radial-gradient(900px 700px at 70% 70%, #06b6d422 0%, transparent 60%),
+    linear-gradient(135deg, #0b1020, #1a2140);
+  --wallpaper-mountain:
+    linear-gradient(180deg, #0a1224 0%, #14315f 60%, #2b6d8f 100%);
+  --wallpaper-grid:
+    linear-gradient(180deg, #0b1020, #11172b);
+  --wallpaper-solid: #0b1020;
+}
+
+/* =========================================================
+   LIGHT
+   ========================================================= */
+[data-theme="light"] {
+  --bg-0: #f4f6fb;
+  --bg-1: #ffffff;
+  --bg-2: #eef1f8;
+  --bg-3: #e2e7f3;
+
+  --fg-0: #0d1326;
+  --fg-1: #1f2742;
+  --fg-2: #4a5276;
+  --fg-3: #7a83a3;
+
+  --accent-1: #2563eb;
+  --accent-2: #0891b2;
+  --accent-3: #db2777;
+
+  --grad-accent: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+  --grad-warm:   linear-gradient(135deg, #db2777 0%, #f59e0b 100%);
+  --grad-cool:   linear-gradient(135deg, #0891b2 0%, #6366f1 100%);
+
+  --window-bg: rgba(255, 255, 255, 0.85);
+  --window-border: rgba(13, 19, 38, 0.10);
+  --window-shadow: 0 18px 50px rgba(13, 19, 38, 0.18), 0 4px 14px rgba(13,19,38,0.08);
+  --titlebar-bg: linear-gradient(180deg, rgba(13,19,38,0.04), rgba(13,19,38,0));
+  --titlebar-fg: #0d1326;
+
+  --taskbar-bg: rgba(255, 255, 255, 0.78);
+  --taskbar-border: rgba(13, 19, 38, 0.10);
+  --taskbar-fg: #0d1326;
+
+  --start-bg: rgba(255, 255, 255, 0.92);
+  --start-border: rgba(13, 19, 38, 0.10);
+
+  --icon-fg: #0d1326;
+  --icon-shadow: 0 2px 6px rgba(13,19,38,0.18);
+  --icon-selected-bg: rgba(37, 99, 235, 0.15);
+  --icon-selected-border: rgba(37, 99, 235, 0.55);
+
+  --hover-bg: rgba(13,19,38,0.05);
+  --active-bg: rgba(13,19,38,0.10);
+
+  --danger: #dc2626;
+  --warn:   #d97706;
+  --ok:     #059669;
+  --info:   #0891b2;
+
+  --scrollbar-thumb: rgba(13,19,38,0.20);
+  --scrollbar-track: transparent;
+
+  --wallpaper-aurora:
+    radial-gradient(1200px 800px at 10% 10%, #c7d2fe 0%, transparent 60%),
+    radial-gradient(1000px 700px at 90% 80%, #a7f3d0 0%, transparent 55%),
+    radial-gradient(800px  600px at 70% 20%, #fbcfe8 0%, transparent 60%),
+    linear-gradient(180deg, #f4f6fb 0%, #e2e7f3 100%);
+  --wallpaper-nebula:
+    radial-gradient(900px 700px at 30% 30%, #fbcfe8aa 0%, transparent 60%),
+    radial-gradient(900px 700px at 70% 70%, #bae6fdaa 0%, transparent 60%),
+    linear-gradient(135deg, #f4f6fb, #e2e7f3);
+  --wallpaper-mountain:
+    linear-gradient(180deg, #dbeafe 0%, #bfdbfe 60%, #93c5fd 100%);
+  --wallpaper-grid:
+    linear-gradient(180deg, #ffffff, #eef1f8);
+  --wallpaper-solid: #eef1f8;
+}
+
+/* =========================================================
+   CYBERPUNK
+   ========================================================= */
+[data-theme="cyberpunk"] {
+  --bg-0: #07020e;
+  --bg-1: #100322;
+  --bg-2: #1a0533;
+  --bg-3: #2b0a55;
+
+  --fg-0: #f0f9ff;
+  --fg-1: #e6e1ff;
+  --fg-2: #b39ddb;
+  --fg-3: #7a5fb8;
+
+  --accent-1: #ff2bd6;       /* hot magenta */
+  --accent-2: #00f0ff;       /* electric cyan */
+  --accent-3: #fff200;       /* neon yellow */
+
+  --grad-accent: linear-gradient(135deg, #ff2bd6 0%, #00f0ff 100%);
+  --grad-warm:   linear-gradient(135deg, #ff2bd6 0%, #fff200 100%);
+  --grad-cool:   linear-gradient(135deg, #00f0ff 0%, #7c3aed 100%);
+
+  --window-bg: rgba(16, 3, 34, 0.78);
+  --window-border: #ff2bd6;
+  --window-shadow:
+    0 0 0 1px #ff2bd680,
+    0 18px 60px #00f0ff30,
+    0 0 30px #ff2bd650;
+  --titlebar-bg: linear-gradient(90deg, #ff2bd633, #00f0ff33);
+  --titlebar-fg: #fff200;
+
+  --taskbar-bg: rgba(7, 2, 14, 0.85);
+  --taskbar-border: #ff2bd6;
+  --taskbar-fg: #00f0ff;
+
+  --start-bg: rgba(16, 3, 34, 0.92);
+  --start-border: #ff2bd6;
+
+  --icon-fg: #00f0ff;
+  --icon-shadow: 0 0 8px #ff2bd6;
+  --icon-selected-bg: rgba(255, 43, 214, 0.25);
+  --icon-selected-border: #ff2bd6;
+
+  --hover-bg: rgba(255, 43, 214, 0.15);
+  --active-bg: rgba(0, 240, 255, 0.18);
+
+  --danger: #ff2bd6;
+  --warn:   #fff200;
+  --ok:     #00f0ff;
+  --info:   #00f0ff;
+
+  --scrollbar-thumb: #ff2bd6;
+  --scrollbar-track: transparent;
+
+  --wallpaper-aurora:
+    radial-gradient(1200px 800px at 10% 10%, #ff2bd640 0%, transparent 55%),
+    radial-gradient(1000px 700px at 90% 80%, #00f0ff40 0%, transparent 55%),
+    linear-gradient(180deg, #07020e 0%, #2b0a55 100%);
+  --wallpaper-nebula:
+    radial-gradient(900px 700px at 50% 50%, #ff2bd650 0%, transparent 60%),
+    linear-gradient(135deg, #07020e, #2b0a55);
+  --wallpaper-mountain:
+    linear-gradient(180deg, #07020e 0%, #2b0a55 60%, #ff2bd6 200%);
+  --wallpaper-grid:
+    linear-gradient(180deg, #07020e, #100322);
+  --wallpaper-solid: #100322;
+}
+
+/* Cyberpunk extra: scanline effect on windows */
+[data-theme="cyberpunk"] .window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 240, 255, 0.04) 2px,
+    rgba(0, 240, 255, 0.04) 3px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: overlay;
+}
+
+/* =========================================================
+   RETRO  (90s beige + chunky bevels)
+   ========================================================= */
+[data-theme="retro"] {
+  --bg-0: #008080;
+  --bg-1: #c0c0c0;
+  --bg-2: #d4d0c8;
+  --bg-3: #ffffff;
+
+  --fg-0: #000000;
+  --fg-1: #0a0a0a;
+  --fg-2: #404040;
+  --fg-3: #808080;
+
+  --accent-1: #000080;
+  --accent-2: #008080;
+  --accent-3: #800000;
+
+  --grad-accent: linear-gradient(180deg, #000080 0%, #1084d0 100%);
+  --grad-warm:   linear-gradient(180deg, #800000 0%, #c0392b 100%);
+  --grad-cool:   linear-gradient(180deg, #008080 0%, #1abc9c 100%);
+
+  --window-bg: #c0c0c0;
+  --window-border: #000000;
+  --window-shadow:
+    inset -1px -1px 0 0 #404040,
+    inset  1px  1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset  2px  2px 0 0 #dfdfdf,
+    4px 4px 0 0 #000000;
+  --titlebar-bg: linear-gradient(90deg, #000080, #1084d0);
+  --titlebar-fg: #ffffff;
+
+  --taskbar-bg: #c0c0c0;
+  --taskbar-border: #000000;
+  --taskbar-fg: #000000;
+
+  --start-bg: #c0c0c0;
+  --start-border: #000000;
+
+  --icon-fg: #ffffff;
+  --icon-shadow: 1px 1px 0 #000000;
+  --icon-selected-bg: rgba(0, 0, 128, 0.45);
+  --icon-selected-border: #000080;
+
+  --hover-bg: rgba(0,0,0,0.08);
+  --active-bg: rgba(0,0,0,0.16);
+
+  --danger: #800000;
+  --warn:   #808000;
+  --ok:     #008000;
+  --info:   #000080;
+
+  --scrollbar-thumb: #808080;
+  --scrollbar-track: #c0c0c0;
+
+  --wallpaper-aurora:   #008080;
+  --wallpaper-nebula:   #4b0082;
+  --wallpaper-mountain: linear-gradient(180deg, #87ceeb, #2e8b57);
+  --wallpaper-grid:     #008080;
+  --wallpaper-solid:    #008080;
+}
+
+[data-theme="retro"] {
+  --r-xs: 0px;
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 0px;
+  --r-xl: 0px;
+  --r-2xl:0px;
+  --font-sans: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
+}
+
+/* =========================================================
+   FOREST
+   ========================================================= */
+[data-theme="forest"] {
+  --bg-0: #0c1f17;
+  --bg-1: #14301f;
+  --bg-2: #1d4030;
+  --bg-3: #2a5a44;
+
+  --fg-0: #f0fff4;
+  --fg-1: #d4f5e0;
+  --fg-2: #92c9a4;
+  --fg-3: #5e8a6e;
+
+  --accent-1: #4ade80;
+  --accent-2: #84cc16;
+  --accent-3: #facc15;
+
+  --grad-accent: linear-gradient(135deg, #4ade80 0%, #84cc16 100%);
+  --grad-warm:   linear-gradient(135deg, #facc15 0%, #f97316 100%);
+  --grad-cool:   linear-gradient(135deg, #14b8a6 0%, #4ade80 100%);
+
+  --window-bg: rgba(20, 48, 31, 0.82);
+  --window-border: rgba(74, 222, 128, 0.18);
+  --window-shadow:
+    0 18px 60px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(74, 222, 128, 0.10);
+  --titlebar-bg: linear-gradient(180deg, rgba(74,222,128,0.10), transparent);
+  --titlebar-fg: #f0fff4;
+
+  --taskbar-bg: rgba(12, 31, 23, 0.78);
+  --taskbar-border: rgba(74, 222, 128, 0.18);
+  --taskbar-fg: #d4f5e0;
+
+  --start-bg: rgba(20, 48, 31, 0.92);
+  --start-border: rgba(74, 222, 128, 0.18);
+
+  --icon-fg: #f0fff4;
+  --icon-shadow: 0 2px 6px rgba(0,0,0,0.55);
+  --icon-selected-bg: rgba(74, 222, 128, 0.20);
+  --icon-selected-border: rgba(74, 222, 128, 0.65);
+
+  --hover-bg: rgba(74,222,128,0.10);
+  --active-bg: rgba(74,222,128,0.18);
+
+  --danger: #ef4444;
+  --warn:   #facc15;
+  --ok:     #4ade80;
+  --info:   #14b8a6;
+
+  --scrollbar-thumb: rgba(74,222,128,0.30);
+  --scrollbar-track: transparent;
+
+  --wallpaper-aurora:
+    radial-gradient(1200px 800px at 10% 10%, #14b8a6aa 0%, transparent 60%),
+    radial-gradient(1000px 700px at 90% 80%, #4ade8077 0%, transparent 60%),
+    linear-gradient(180deg, #0c1f17 0%, #1d4030 100%);
+  --wallpaper-nebula:
+    radial-gradient(900px 700px at 50% 50%, #facc1533 0%, transparent 60%),
+    linear-gradient(135deg, #0c1f17, #14301f);
+  --wallpaper-mountain:
+    linear-gradient(180deg, #0c1f17 0%, #1d4030 50%, #4ade80 110%);
+  --wallpaper-grid:
+    linear-gradient(180deg, #0c1f17, #14301f);
+  --wallpaper-solid: #14301f;
+}
+
+/* =========================================================
+   Global resets / base typography
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  color: var(--fg-0);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+  transition: background var(--dur-slow) var(--ease-out), color var(--dur-med) var(--ease-out);
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+input {
+  font-family: inherit;
+  color: inherit;
+  outline: none;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--r-pill);
+}
+::-webkit-scrollbar-thumb:hover { filter: brightness(1.2); }
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

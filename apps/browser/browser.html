@@ -1,0 +1,95 @@
+<!--
+  WebSurf — Browser template, injected by js/browser.js.
+  IDs scoped with `ws-` to avoid collisions.
+-->
+<div class="ws-root" data-ws-root>
+  <!-- ================================================================
+       TAB STRIP (Chrome-style)
+       ================================================================ -->
+  <div class="ws-tabstrip" data-ws-tabstrip>
+    <div class="ws-tabs" data-ws-tabs role="tablist"></div>
+    <button class="ws-newtab" data-ws-newtab title="New tab (Ctrl+T)">+</button>
+  </div>
+
+  <!-- ================================================================
+       NAVIGATION BAR
+       ================================================================ -->
+  <div class="ws-navbar" data-ws-navbar>
+    <button class="ws-navbtn" data-ws-nav="back"    title="Back (Alt+Left)">←</button>
+    <button class="ws-navbtn" data-ws-nav="forward" title="Forward (Alt+Right)">→</button>
+    <button class="ws-navbtn" data-ws-nav="refresh" title="Refresh (Ctrl+R)">⟳</button>
+    <button class="ws-navbtn" data-ws-nav="home"    title="Home">🏠</button>
+
+    <div class="ws-addrbar" data-ws-addrbar>
+      <span class="ws-favicon" data-ws-favicon>🌐</span>
+      <input class="ws-addr" data-ws-addr type="text" spellcheck="false"
+             placeholder="Search Google or enter a URL" />
+      <span class="ws-loading" data-ws-loading hidden></span>
+    </div>
+
+    <button class="ws-navbtn" data-ws-nav="bookmark"  title="Bookmark">☆</button>
+    <button class="ws-navbtn" data-ws-nav="bookmarks" title="Bookmarks sidebar">📑</button>
+    <button class="ws-navbtn" data-ws-nav="history"   title="History sidebar">🕓</button>
+    <button class="ws-navbtn" data-ws-nav="menu"      title="Menu">⋮</button>
+  </div>
+
+  <!-- ================================================================
+       MAIN CONTENT AREA (content + optional sidebar)
+       ================================================================ -->
+  <div class="ws-body" data-ws-body>
+    <div class="ws-content" data-ws-content>
+      <!-- Each tab's content (iframe or homepage) will be swapped in here -->
+    </div>
+
+    <!-- Sidebar (bookmarks / history) -->
+    <aside class="ws-sidebar" data-ws-sidebar hidden>
+      <div class="ws-sidebar-head">
+        <span class="ws-sidebar-title" data-ws-sidebar-title>Bookmarks</span>
+        <button class="ws-iconbtn" data-ws-sidebar-close title="Close">✕</button>
+      </div>
+      <div class="ws-sidebar-body" data-ws-sidebar-body></div>
+    </aside>
+  </div>
+
+  <!-- ================================================================
+       DOWNLOAD BAR
+       ================================================================ -->
+  <div class="ws-downloadbar" data-ws-downloadbar hidden>
+    <div class="ws-dl-items" data-ws-dl-items></div>
+    <button class="ws-iconbtn" data-ws-dl-close title="Close">✕</button>
+  </div>
+
+  <!-- ================================================================
+       MENU DROPDOWN (3-dot menu)
+       ================================================================ -->
+  <div class="ws-menu" data-ws-menu hidden>
+    <div class="ws-menu-item" data-ws-menu-act="newTab">
+      <span class="ws-menu-icon">➕</span> New tab
+      <span class="ws-menu-kbd">Ctrl+T</span>
+    </div>
+    <div class="ws-menu-item" data-ws-menu-act="closeTab">
+      <span class="ws-menu-icon">✕</span> Close tab
+      <span class="ws-menu-kbd">Ctrl+W</span>
+    </div>
+    <div class="ws-menu-sep"></div>
+    <div class="ws-menu-item" data-ws-menu-act="bookmarks">
+      <span class="ws-menu-icon">📑</span> Bookmarks
+    </div>
+    <div class="ws-menu-item" data-ws-menu-act="history">
+      <span class="ws-menu-icon">🕓</span> History
+    </div>
+    <div class="ws-menu-item" data-ws-menu-act="downloads">
+      <span class="ws-menu-icon">⬇</span> Downloads
+    </div>
+    <div class="ws-menu-sep"></div>
+    <div class="ws-menu-item" data-ws-menu-act="clearHistory">
+      <span class="ws-menu-icon">🧹</span> Clear history
+    </div>
+    <div class="ws-menu-item" data-ws-menu-act="home">
+      <span class="ws-menu-icon">🏠</span> Go home
+    </div>
+    <div class="ws-menu-item" data-ws-menu-act="help">
+      <span class="ws-menu-icon">?</span> Shortcuts
+    </div>
+  </div>
+</div>

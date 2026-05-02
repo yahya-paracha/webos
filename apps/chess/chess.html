@@ -1,0 +1,188 @@
+<!--
+  OsChess — chess.html
+  Markup template injected into a WindowManager window body.
+  All styling lives in chess.css; behaviour in js/chess.js.
+-->
+<div class="chess-app" id="chess-root">
+
+  <!-- Top toolbar ============================================== -->
+  <div class="chess-toolbar" role="toolbar" aria-label="Chess controls">
+    <button class="ch-btn ch-btn-primary" data-act="new"     title="New Game (Ctrl+N)">♟ New Game</button>
+    <button class="ch-btn"               data-act="undo"    title="Undo last move (Ctrl+Z)">↶ Undo</button>
+    <button class="ch-btn"               data-act="flip"    title="Flip board (F)">⇅ Flip</button>
+    <button class="ch-btn"               data-act="hint"    title="Show hint (H)">💡 Hint</button>
+    <span class="ch-spacer"></span>
+    <select class="ch-select" data-act="mode" title="Game mode">
+      <option value="hva">Human vs AI</option>
+      <option value="hvh">Human vs Human</option>
+      <option value="ava">AI vs AI (watch)</option>
+    </select>
+    <select class="ch-select" data-act="diff" title="AI difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium" selected>Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    <select class="ch-select" data-act="side" title="Play as">
+      <option value="w" selected>Play White</option>
+      <option value="b">Play Black</option>
+    </select>
+    <select class="ch-select" data-act="clock" title="Clock (per side)">
+      <option value="0" selected>No clock</option>
+      <option value="5">5 min</option>
+      <option value="10">10 min</option>
+      <option value="15">15 min</option>
+      <option value="30">30 min</option>
+    </select>
+    <button class="ch-btn ch-btn-icon" data-act="settings" title="Settings">⚙</button>
+  </div>
+
+  <!-- Three column main area ==================================== -->
+  <div class="chess-main">
+
+    <!-- LEFT: white captures + status =========================== -->
+    <aside class="chess-side chess-side-left">
+      <div class="chess-clock" data-side="b">
+        <div class="ch-clock-name" data-name="b">Black</div>
+        <div class="ch-clock-time" data-time="b">--:--</div>
+      </div>
+
+      <div class="chess-captured" data-captured="byWhite" aria-label="Pieces captured by White">
+        <div class="ch-cap-title">Captured by White</div>
+        <div class="ch-cap-list" data-list="byWhite"></div>
+        <div class="ch-cap-score" data-score="byWhite">+0</div>
+      </div>
+
+      <div class="chess-stats">
+        <div class="ch-stat-row"><span>Wins</span><b data-stat="wins">0</b></div>
+        <div class="ch-stat-row"><span>Losses</span><b data-stat="losses">0</b></div>
+        <div class="ch-stat-row"><span>Draws</span><b data-stat="draws">0</b></div>
+        <div class="ch-stat-row"><span>Streak</span><b data-stat="streak">0</b></div>
+      </div>
+    </aside>
+
+    <!-- CENTER: board ============================================ -->
+    <section class="chess-center">
+      <div class="chess-coords-top" data-coords="files"></div>
+      <div class="chess-board-wrap">
+        <div class="chess-coords-left" data-coords="ranks"></div>
+        <div class="chess-board" id="chess-board" aria-label="Chess board">
+          <!-- 64 squares injected by JS -->
+        </div>
+        <div class="chess-coords-right" data-coords="ranks-r"></div>
+      </div>
+      <div class="chess-coords-bottom" data-coords="files-b"></div>
+
+      <div class="chess-turn-bar">
+        <span class="ch-turn-dot" data-turn="dot"></span>
+        <span class="ch-turn-text" data-turn="text">White to move</span>
+        <span class="ch-turn-flag" data-turn="flag"></span>
+      </div>
+    </section>
+
+    <!-- RIGHT: black captures + history ========================== -->
+    <aside class="chess-side chess-side-right">
+      <div class="chess-clock" data-side="w">
+        <div class="ch-clock-name" data-name="w">White</div>
+        <div class="ch-clock-time" data-time="w">--:--</div>
+      </div>
+
+      <div class="chess-captured" data-captured="byBlack" aria-label="Pieces captured by Black">
+        <div class="ch-cap-title">Captured by Black</div>
+        <div class="ch-cap-list" data-list="byBlack"></div>
+        <div class="ch-cap-score" data-score="byBlack">+0</div>
+      </div>
+
+      <div class="chess-history">
+        <div class="ch-hist-head">
+          <span>Move history</span>
+          <button class="ch-btn-mini" data-act="copy-pgn" title="Copy PGN">⎘</button>
+        </div>
+        <div class="ch-hist-body" id="chess-history" tabindex="0"></div>
+        <div class="ch-hist-foot">
+          <button class="ch-btn-mini" data-act="hist-start" title="Jump to start">⏮</button>
+          <button class="ch-btn-mini" data-act="hist-prev"  title="Previous">◀</button>
+          <button class="ch-btn-mini" data-act="hist-next"  title="Next">▶</button>
+          <button class="ch-btn-mini" data-act="hist-end"   title="Jump to end">⏭</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Promotion dialog ========================================== -->
+  <div class="ch-modal-backdrop" id="ch-promo" hidden>
+    <div class="ch-modal ch-promo">
+      <h3>Choose promotion</h3>
+      <div class="ch-promo-row">
+        <button class="ch-promo-btn" data-promo="q" title="Queen">♛</button>
+        <button class="ch-promo-btn" data-promo="r" title="Rook">♜</button>
+        <button class="ch-promo-btn" data-promo="b" title="Bishop">♝</button>
+        <button class="ch-promo-btn" data-promo="n" title="Knight">♞</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game over modal =========================================== -->
+  <div class="ch-modal-backdrop" id="ch-gameover" hidden>
+    <div class="ch-modal ch-gameover">
+      <div class="ch-go-icon" data-go="icon">🏆</div>
+      <h2 class="ch-go-title" data-go="title">Checkmate</h2>
+      <p class="ch-go-sub" data-go="sub">White wins by checkmate</p>
+      <div class="ch-go-actions">
+        <button class="ch-btn ch-btn-primary" data-act="new">Play Again</button>
+        <button class="ch-btn"               data-act="dismiss">Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal ============================================ -->
+  <div class="ch-modal-backdrop" id="ch-settings" hidden>
+    <div class="ch-modal ch-settings">
+      <h3>Chess Settings</h3>
+      <label class="ch-set-row">
+        <span>Animate piece moves</span>
+        <input type="checkbox" data-set="anim" checked>
+      </label>
+      <label class="ch-set-row">
+        <span>Show legal move dots</span>
+        <input type="checkbox" data-set="dots" checked>
+      </label>
+      <label class="ch-set-row">
+        <span>Highlight last move</span>
+        <input type="checkbox" data-set="last" checked>
+      </label>
+      <label class="ch-set-row">
+        <span>Show coordinates</span>
+        <input type="checkbox" data-set="coords" checked>
+      </label>
+      <label class="ch-set-row">
+        <span>Sound effects</span>
+        <input type="checkbox" data-set="sound" checked>
+      </label>
+      <label class="ch-set-row">
+        <span>Auto-promote to queen</span>
+        <input type="checkbox" data-set="autoq">
+      </label>
+      <label class="ch-set-row">
+        <span>Board theme</span>
+        <select data-set="theme">
+          <option value="classic">Classic</option>
+          <option value="ocean">Ocean</option>
+          <option value="forest">Forest</option>
+          <option value="midnight">Midnight</option>
+          <option value="rose">Rose</option>
+        </select>
+      </label>
+      <label class="ch-set-row">
+        <span>Piece set</span>
+        <select data-set="pieces">
+          <option value="unicode">Unicode</option>
+          <option value="solid">Solid</option>
+        </select>
+      </label>
+      <div class="ch-set-actions">
+        <button class="ch-btn"               data-act="reset-stats">Reset Stats</button>
+        <button class="ch-btn ch-btn-primary" data-act="close-settings">Done</button>
+      </div>
+    </div>
+  </div>
+</div>

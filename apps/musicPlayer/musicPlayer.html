@@ -1,0 +1,205 @@
+<!-- ============================================================================
+     SoundWave — WebOS Music Player
+     ----------------------------------------------------------------------------
+     Loaded into the WebOS window body by musicPlayer.js. Every interactive
+     element exposes a stable data-mp-* attribute for the JS to wire onto.
+     ========================================================================= -->
+<div class="mp-app" data-mp-root>
+
+  <!-- ============================================================
+       FULL MODE (default)
+       ============================================================ -->
+  <div class="mp-full" data-mp-full>
+
+    <!-- Top: Library sidebar | Song list | Now Playing -->
+    <div class="mp-main">
+
+      <!-- Sidebar (Library) -->
+      <aside class="mp-sidebar" data-mp-sidebar>
+        <div class="mp-brand">
+          <span class="mp-brand-ico">🎵</span>
+          <span class="mp-brand-name">SoundWave</span>
+        </div>
+        <nav class="mp-nav" data-mp-nav>
+          <div class="mp-nav-section">Library</div>
+          <button class="mp-nav-item active" data-mp-view="all">     <span class="mp-nav-ico">🎶</span>All Songs</button>
+          <button class="mp-nav-item"        data-mp-view="albums">  <span class="mp-nav-ico">💿</span>Albums</button>
+          <button class="mp-nav-item"        data-mp-view="artists"> <span class="mp-nav-ico">🎤</span>Artists</button>
+          <button class="mp-nav-item"        data-mp-view="queue">   <span class="mp-nav-ico">🗒</span>Queue</button>
+
+          <div class="mp-nav-section">Playlists
+            <button class="mp-nav-add" title="New Playlist" data-mp-new-playlist>＋</button>
+          </div>
+          <div class="mp-playlists" data-mp-playlists></div>
+
+          <div class="mp-nav-section">Tools</div>
+          <button class="mp-nav-item" data-mp-view="equalizer"><span class="mp-nav-ico">🎛</span>Equalizer</button>
+          <button class="mp-nav-item" data-mp-view="visualizer"><span class="mp-nav-ico">📈</span>Visualizer</button>
+        </nav>
+
+        <div class="mp-sidebar-foot">
+          <input type="file" multiple accept="audio/*" hidden data-mp-file-input />
+          <button class="mp-load-btn" data-mp-load>＋ Load Music</button>
+        </div>
+      </aside>
+
+      <!-- Center column: header + list -->
+      <section class="mp-center">
+
+        <header class="mp-header">
+          <h1 class="mp-header-title" data-mp-view-title>All Songs</h1>
+          <div class="mp-header-search">
+            <span class="mp-header-search-ico">🔎</span>
+            <input type="text" placeholder="Search songs, artists, albums…" data-mp-search />
+          </div>
+          <div class="mp-header-sort">
+            <label>Sort</label>
+            <select data-mp-sort>
+              <option value="title">Title</option>
+              <option value="artist">Artist</option>
+              <option value="album">Album</option>
+              <option value="duration">Duration</option>
+              <option value="added">Date Added</option>
+            </select>
+          </div>
+        </header>
+
+        <div class="mp-fake-banner" data-mp-fake-banner hidden>
+          <span>Demo library shown.</span>
+          <strong>Load your own music</strong>
+          <button data-mp-load-2>＋ Load Files</button>
+        </div>
+
+        <div class="mp-list-wrap">
+          <div class="mp-list-head">
+            <div class="mp-col-num">#</div>
+            <div class="mp-col-art"></div>
+            <div class="mp-col-title">Title</div>
+            <div class="mp-col-album">Album</div>
+            <div class="mp-col-dur">⏱</div>
+            <div class="mp-col-act"></div>
+          </div>
+          <div class="mp-list" data-mp-list></div>
+        </div>
+
+      </section>
+
+      <!-- Right: Now Playing panel -->
+      <aside class="mp-now" data-mp-now>
+        <div class="mp-now-art" data-mp-now-art>
+          <div class="mp-now-art-placeholder" data-mp-now-art-placeholder>
+            <span>♪</span>
+          </div>
+          <div class="mp-eqbars" data-mp-eqbars>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="mp-now-meta">
+          <div class="mp-now-title"  data-mp-now-title>Nothing Playing</div>
+          <div class="mp-now-artist" data-mp-now-artist>—</div>
+          <div class="mp-now-album"  data-mp-now-album>—</div>
+        </div>
+
+        <div class="mp-now-vis">
+          <canvas data-mp-vis width="280" height="120"></canvas>
+          <button class="mp-vis-toggle" data-mp-vis-toggle title="Toggle visualizer">≋</button>
+        </div>
+
+        <div class="mp-now-extras">
+          <div class="mp-up-next">
+            <div class="mp-up-next-head">
+              <span>Up Next</span>
+              <button data-mp-clear-queue title="Clear queue">✕</button>
+            </div>
+            <div class="mp-up-next-list" data-mp-queue-list></div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Bottom: Player controls bar -->
+    <footer class="mp-controls">
+      <div class="mp-ctrls-left">
+        <div class="mp-mini-art" data-mp-mini-art></div>
+        <div class="mp-mini-meta">
+          <div class="mp-mini-title"  data-mp-mini-title>—</div>
+          <div class="mp-mini-artist" data-mp-mini-artist>—</div>
+        </div>
+      </div>
+
+      <div class="mp-ctrls-mid">
+        <div class="mp-ctrls-buttons">
+          <button class="mp-ctrl" data-mp-shuffle title="Shuffle (S)">🔀</button>
+          <button class="mp-ctrl" data-mp-prev    title="Previous (P)">⏮</button>
+          <button class="mp-ctrl mp-play"   data-mp-play  title="Play (Space)">▶</button>
+          <button class="mp-ctrl" data-mp-next    title="Next (N)">⏭</button>
+          <button class="mp-ctrl" data-mp-repeat  title="Repeat (R)">🔁</button>
+        </div>
+        <div class="mp-progress-wrap">
+          <span class="mp-time" data-mp-time-cur>0:00</span>
+          <div class="mp-progress" data-mp-progress>
+            <div class="mp-progress-bg"></div>
+            <div class="mp-progress-buf"  data-mp-progress-buf></div>
+            <div class="mp-progress-fill" data-mp-progress-fill></div>
+            <div class="mp-progress-knob" data-mp-progress-knob></div>
+            <div class="mp-progress-tip"  data-mp-progress-tip hidden>0:00</div>
+          </div>
+          <span class="mp-time" data-mp-time-tot>0:00</span>
+        </div>
+      </div>
+
+      <div class="mp-ctrls-right">
+        <button class="mp-ctrl" data-mp-vis-toggle-2 title="Visualizer">≋</button>
+        <button class="mp-ctrl" data-mp-eq-toggle    title="Equalizer">🎚</button>
+        <button class="mp-ctrl" data-mp-mute         title="Mute">🔊</button>
+        <div class="mp-volume">
+          <input type="range" min="0" max="100" value="80" data-mp-volume />
+        </div>
+        <button class="mp-ctrl" data-mp-mini title="Mini Mode">⤢</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ============================================================
+       MINI MODE
+       ============================================================ -->
+  <div class="mp-mini" data-mp-mini-root hidden>
+    <div class="mp-mini-bar">
+      <div class="mp-mini-bar-art" data-mp-mini2-art></div>
+      <div class="mp-mini-bar-meta">
+        <div class="mp-mini-bar-title" data-mp-mini2-title>Nothing Playing</div>
+        <div class="mp-mini-bar-artist" data-mp-mini2-artist>—</div>
+      </div>
+      <div class="mp-mini-bar-ctrls">
+        <button data-mp-prev-mini  title="Prev">⏮</button>
+        <button data-mp-play-mini  title="Play/Pause" class="mp-play">▶</button>
+        <button data-mp-next-mini  title="Next">⏭</button>
+        <button data-mp-restore    title="Restore">⤡</button>
+      </div>
+    </div>
+    <div class="mp-mini-progress" data-mp-mini-progress>
+      <div class="mp-mini-progress-fill" data-mp-mini-progress-fill></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       EQUALIZER MODAL
+       ============================================================ -->
+  <div class="mp-modal-root" data-mp-modal-root hidden>
+    <div class="mp-modal-bg"></div>
+    <div class="mp-modal" data-mp-modal>
+      <header class="mp-modal-head">
+        <span data-mp-modal-title>Equalizer</span>
+        <button class="mp-modal-close" data-mp-modal-close>✕</button>
+      </header>
+      <div class="mp-modal-body" data-mp-modal-body></div>
+    </div>
+  </div>
+
+  <!-- Hidden audio element -->
+  <audio data-mp-audio-a preload="auto"></audio>
+  <audio data-mp-audio-b preload="auto"></audio>
+
+</div>

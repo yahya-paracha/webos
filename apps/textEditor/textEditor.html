@@ -1,0 +1,169 @@
+<!--
+  NoteForge Text Editor — template injected inside a WebOS window body.
+  Loaded and wired up by js/textEditor.js (render() function).
+  All IDs are scoped with `ne-` (NoteForge Editor) to avoid global collisions
+  across multiple windows of the same app.
+-->
+<div class="ne-root" data-ne-root>
+  <!-- ================================================================
+       MENU BAR
+       ================================================================ -->
+  <div class="ne-menubar" role="menubar">
+    <button class="ne-menu-item" data-menu="file"   role="menuitem" aria-haspopup="true">File</button>
+    <button class="ne-menu-item" data-menu="edit"   role="menuitem" aria-haspopup="true">Edit</button>
+    <button class="ne-menu-item" data-menu="view"   role="menuitem" aria-haspopup="true">View</button>
+    <button class="ne-menu-item" data-menu="format" role="menuitem" aria-haspopup="true">Format</button>
+    <button class="ne-menu-item" data-menu="run"    role="menuitem" aria-haspopup="true">Run</button>
+
+    <div class="ne-menubar-spacer"></div>
+
+    <div class="ne-toolbar-actions">
+      <button class="ne-icon-btn" data-act="new"      title="New (Ctrl+N)">📄</button>
+      <button class="ne-icon-btn" data-act="open"     title="Open (Ctrl+O)">📂</button>
+      <button class="ne-icon-btn" data-act="save"     title="Save (Ctrl+S)">💾</button>
+      <button class="ne-icon-btn" data-act="find"     title="Find (Ctrl+F)">🔍</button>
+      <button class="ne-icon-btn" data-act="replace"  title="Replace (Ctrl+H)">🔁</button>
+      <span class="ne-sep"></span>
+      <button class="ne-icon-btn" data-act="undo"     title="Undo (Ctrl+Z)">↶</button>
+      <button class="ne-icon-btn" data-act="redo"     title="Redo (Ctrl+Y)">↷</button>
+      <span class="ne-sep"></span>
+      <button class="ne-icon-btn" data-act="wrap"     title="Toggle Word Wrap (Ctrl+Alt+W)">⇄</button>
+      <button class="ne-icon-btn" data-act="minimap"  title="Toggle Minimap">🗺</button>
+      <button class="ne-icon-btn" data-act="help"     title="Shortcuts (Ctrl+/)">?</button>
+    </div>
+  </div>
+
+  <!-- Dropdown menu root (absolute positioned inside .ne-root) -->
+  <div class="ne-dropdown" data-ne-dropdown hidden></div>
+
+  <!-- ================================================================
+       TAB BAR
+       ================================================================ -->
+  <div class="ne-tabbar" data-ne-tabbar role="tablist">
+    <!-- tabs are injected here -->
+    <button class="ne-tab-new" data-act="new" title="New tab (Ctrl+N)">+</button>
+  </div>
+
+  <!-- ================================================================
+       FIND / REPLACE PANEL
+       ================================================================ -->
+  <div class="ne-findbar" data-ne-findbar hidden>
+    <div class="ne-find-row">
+      <span class="ne-find-label">Find</span>
+      <input class="ne-find-input"    data-ne-find-input    type="text" spellcheck="false" placeholder="Find…" />
+      <button class="ne-find-btn" data-find-act="prev"   title="Previous (Shift+Enter)">↑</button>
+      <button class="ne-find-btn" data-find-act="next"   title="Next (Enter)">↓</button>
+      <span class="ne-find-count" data-ne-find-count>0 / 0</span>
+      <button class="ne-find-toggle" data-find-opt="case" title="Match case">Aa</button>
+      <button class="ne-find-toggle" data-find-opt="word" title="Whole word">⟨W⟩</button>
+      <button class="ne-find-toggle" data-find-opt="regex" title="Regex">.*</button>
+      <button class="ne-find-close" data-find-act="close" title="Close (Esc)">✕</button>
+    </div>
+    <div class="ne-find-row ne-replace-row" data-ne-replace-row>
+      <span class="ne-find-label">Replace</span>
+      <input class="ne-find-input"    data-ne-replace-input type="text" spellcheck="false" placeholder="Replace with…" />
+      <button class="ne-find-btn" data-find-act="replace"     title="Replace">Replace</button>
+      <button class="ne-find-btn" data-find-act="replace-all" title="Replace all">Replace All</button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       EDITOR AREA — gutter + textarea overlay + minimap
+       ================================================================ -->
+  <div class="ne-editor-wrap" data-ne-editor-wrap>
+    <div class="ne-gutter" data-ne-gutter aria-hidden="true"></div>
+
+    <div class="ne-editor-col" data-ne-editor-col>
+      <!-- The highlight layer mirrors the textarea content with tokens. -->
+      <pre class="ne-highlight" data-ne-highlight aria-hidden="true"><code data-ne-highlight-code></code></pre>
+
+      <!-- Transparent textarea for text input, sits on top of highlight. -->
+      <textarea
+        class="ne-textarea"
+        data-ne-textarea
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        wrap="off"
+        aria-label="Text editor"
+      ></textarea>
+
+      <!-- Current-line highlight div -->
+      <div class="ne-line-highlight" data-ne-line-hl></div>
+    </div>
+
+    <!-- Minimap (hidden by default, toggleable) -->
+    <div class="ne-minimap" data-ne-minimap hidden>
+      <canvas data-ne-minimap-canvas></canvas>
+      <div class="ne-minimap-slider" data-ne-minimap-slider></div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       STATUS BAR
+       ================================================================ -->
+  <div class="ne-statusbar" data-ne-statusbar>
+    <div class="ne-sb-left">
+      <span class="ne-sb-item"  data-sb="file"      title="File name">Untitled</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="lang"      title="Language">Plain Text</span>
+    </div>
+
+    <div class="ne-sb-center">
+      <span class="ne-sb-item"  data-sb="dirty"     title="Unsaved changes"></span>
+    </div>
+
+    <div class="ne-sb-right">
+      <span class="ne-sb-item"  data-sb="linecol"   title="Line & Column">Ln 1, Col 1</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="sel"       title="Selection">0 sel</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="wordcount" title="Word / char count">0 words · 0 chars</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="eol"       title="End of line">LF</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="enc"       title="Encoding">UTF-8</span>
+      <span class="ne-sb-dot">•</span>
+      <span class="ne-sb-item"  data-sb="zoom"      title="Font size">14px</span>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       OPEN / SAVE-AS FILE PICKER (in-editor modal)
+       ================================================================ -->
+  <div class="ne-modal" data-ne-modal hidden>
+    <div class="ne-modal-card">
+      <div class="ne-modal-head">
+        <span class="ne-modal-title" data-ne-modal-title>Open File</span>
+        <button class="ne-icon-btn" data-ne-modal-close>✕</button>
+      </div>
+      <div class="ne-modal-body">
+        <div class="ne-path-bar">
+          <button class="ne-find-btn" data-ne-modal-up title="Up">↑</button>
+          <input class="ne-find-input" data-ne-modal-path type="text" spellcheck="false" />
+        </div>
+        <div class="ne-modal-list" data-ne-modal-list></div>
+        <div class="ne-modal-foot">
+          <label class="ne-modal-label">Name:</label>
+          <input class="ne-find-input" data-ne-modal-name type="text" spellcheck="false" />
+          <button class="ne-find-btn ne-btn-primary" data-ne-modal-ok>OK</button>
+          <button class="ne-find-btn" data-ne-modal-cancel>Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SHORTCUTS HELP PANEL
+       ================================================================ -->
+  <div class="ne-shortcuts" data-ne-shortcuts hidden>
+    <div class="ne-sc-card">
+      <div class="ne-sc-head">
+        <span>Keyboard Shortcuts</span>
+        <button class="ne-icon-btn" data-ne-sc-close>✕</button>
+      </div>
+      <div class="ne-sc-body" data-ne-sc-body></div>
+    </div>
+  </div>
+</div>

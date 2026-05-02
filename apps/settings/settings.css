@@ -1,0 +1,846 @@
+/* ============================================================================
+ * WebOS — SystemSettings stylesheet
+ * ----------------------------------------------------------------------------
+ * Provides:
+ *   - Two-column layout (sidebar + main panel)
+ *   - Categorised navigation list
+ *   - Setting "rows" with label/help on the left, control on the right
+ *   - Custom toggle switches (no libraries)
+ *   - Slider controls
+ *   - Theme + wallpaper visual swatches
+ *   - Avatar gallery picker
+ *   - Modal confirmation dialog
+ *   - Save-state badge + footer hint
+ * ==========================================================================*/
+
+/* ----------------------------------------------------------------------------
+ * Tokens (fall back to global theme variables when present)
+ * --------------------------------------------------------------------------*/
+.ossettings-root {
+  --osset-bg:        var(--bg-2, #0f1422);
+  --osset-bg-alt:    var(--bg-1, #161b2c);
+  --osset-bg-soft:   var(--bg-3, #1c2236);
+  --osset-fg:        var(--fg-0, #e6ecf6);
+  --osset-fg-muted:  var(--fg-2, #9aa3b2);
+  --osset-fg-faint:  var(--fg-3, #6b7484);
+  --osset-border:    var(--border-1, rgba(255, 255, 255, 0.08));
+  --osset-border-2:  var(--border-2, rgba(255, 255, 255, 0.16));
+  --osset-accent:    var(--accent-1, #7c3aed);
+  --osset-accent-2:  var(--accent-2, #06b6d4);
+  --osset-danger:    #ef4444;
+  --osset-warn:      #f59e0b;
+  --osset-success:   #10b981;
+  --osset-shadow:    0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ----------------------------------------------------------------------------
+ * Root layout
+ * --------------------------------------------------------------------------*/
+.ossettings-root {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  width: 100%;
+  height: 100%;
+  background: var(--osset-bg);
+  color: var(--osset-fg);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------------------------
+ * Sidebar
+ * --------------------------------------------------------------------------*/
+.osset-sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--osset-bg-alt);
+  border-right: 1px solid var(--osset-border);
+  overflow: hidden;
+}
+
+.osset-sidebar-header {
+  padding: 16px 16px 12px 16px;
+}
+
+.osset-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.osset-brand-glyph {
+  width: 36px; height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--osset-accent), var(--osset-accent-2));
+  color: white;
+  font-size: 18px;
+  box-shadow: var(--osset-shadow);
+}
+
+.osset-brand-text strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.osset-brand-text small {
+  display: block;
+  font-size: 11px;
+  color: var(--osset-fg-faint);
+  margin-top: 2px;
+}
+
+/* Search */
+.osset-search {
+  position: relative;
+  padding: 0 14px 12px 14px;
+}
+.osset-search-input {
+  width: 100%;
+  background: var(--osset-bg);
+  border: 1px solid var(--osset-border);
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  padding: 7px 30px 7px 10px;
+  outline: none;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.osset-search-input:focus {
+  border-color: var(--osset-accent-2);
+  background: var(--osset-bg-soft);
+}
+.osset-search-glyph {
+  position: absolute;
+  right: 24px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--osset-fg-faint);
+  pointer-events: none;
+}
+
+/* Nav list */
+.osset-nav {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 4px 8px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.osset-nav-group {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--osset-fg-faint);
+  padding: 10px 10px 4px 10px;
+}
+
+.osset-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: var(--osset-fg);
+  font: inherit;
+  text-align: left;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+.osset-nav-item:hover {
+  background: var(--osset-bg-soft);
+}
+.osset-nav-item.is-active {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--osset-accent) 18%, transparent),
+    transparent
+  );
+  border-color: color-mix(in srgb, var(--osset-accent) 35%, transparent);
+}
+.osset-nav-item.is-active .osset-nav-icon {
+  color: var(--osset-accent-2);
+}
+.osset-nav-item:active { transform: translateY(1px); }
+
+.osset-nav-icon {
+  width: 22px; height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--osset-fg-muted);
+  flex: 0 0 auto;
+}
+.osset-nav-label {
+  font-weight: 500;
+  font-size: 13px;
+  flex: 1 1 auto;
+}
+.osset-nav-badge {
+  font-size: 10px;
+  background: var(--osset-accent);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.osset-sidebar-footer {
+  padding: 10px 12px 12px 12px;
+  border-top: 1px solid var(--osset-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.osset-account-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--osset-bg);
+  border: 1px solid var(--osset-border);
+}
+.osset-account-avatar {
+  font-size: 18px;
+  width: 28px; height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--osset-bg-soft);
+  border-radius: 50%;
+  overflow: hidden;
+}
+.osset-account-text strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.osset-account-text small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--osset-fg-faint);
+}
+
+.osset-version {
+  font-size: 10px;
+  color: var(--osset-fg-faint);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Main area
+ * --------------------------------------------------------------------------*/
+.osset-main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.osset-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 18px 24px 12px 24px;
+  border-bottom: 1px solid var(--osset-border);
+  flex: 0 0 auto;
+}
+.osset-header-left h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.osset-subtitle {
+  margin: 4px 0 0 0;
+  color: var(--osset-fg-muted);
+  font-size: 13px;
+}
+
+.osset-savestate {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--osset-success);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.osset-savestate[data-state="saving"] {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--osset-warn);
+  border-color: rgba(245, 158, 11, 0.32);
+}
+.osset-savestate[data-state="error"] {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--osset-danger);
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+.osset-panel {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px 24px 32px 24px;
+}
+
+.osset-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-top: 1px solid var(--osset-border);
+  background: var(--osset-bg-alt);
+}
+.osset-footer-spacer { flex: 1 1 auto; }
+.osset-hint {
+  font-size: 11.5px;
+  color: var(--osset-fg-faint);
+}
+
+/* ----------------------------------------------------------------------------
+ * Section
+ * --------------------------------------------------------------------------*/
+.osset-section {
+  margin: 0 0 22px 0;
+  padding: 14px 16px 6px 16px;
+  background: var(--osset-bg-alt);
+  border: 1px solid var(--osset-border);
+  border-radius: 12px;
+}
+
+.osset-section-title {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--osset-fg-muted);
+}
+
+.osset-section-help {
+  margin: 0 0 12px 0;
+  font-size: 12.5px;
+  color: var(--osset-fg-faint);
+}
+
+.osset-section-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row */
+.osset-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--osset-border);
+}
+.osset-row:first-child { border-top: none; }
+
+.osset-row-info {
+  min-width: 0;
+}
+.osset-row-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--osset-fg);
+}
+.osset-row-help {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--osset-fg-faint);
+  line-height: 1.4;
+}
+
+.osset-row-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ----------------------------------------------------------------------------
+ * Buttons
+ * --------------------------------------------------------------------------*/
+.osset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--osset-bg-soft);
+  color: var(--osset-fg);
+  border: 1px solid var(--osset-border-2);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+.osset-btn:hover { background: var(--osset-bg); }
+.osset-btn:active { transform: translateY(1px); }
+
+.osset-btn-primary {
+  background: linear-gradient(135deg, var(--osset-accent), var(--osset-accent-2));
+  border-color: transparent;
+  color: white;
+}
+.osset-btn-primary:hover { filter: brightness(1.05); }
+
+.osset-btn-ghost {
+  background: transparent;
+  border-color: var(--osset-border);
+}
+.osset-btn-ghost:hover { background: var(--osset-bg-soft); }
+
+.osset-btn-danger {
+  background: var(--osset-danger);
+  border-color: transparent;
+  color: white;
+}
+.osset-btn-danger:hover { filter: brightness(1.06); }
+
+.osset-btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* ----------------------------------------------------------------------------
+ * Toggle switch
+ * --------------------------------------------------------------------------*/
+.osset-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.osset-toggle-track {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--osset-bg-soft);
+  border: 1px solid var(--osset-border-2);
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+.osset-toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--osset-fg-muted);
+  transition: left 0.18s ease, background 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.osset-toggle[aria-checked="true"] .osset-toggle-track {
+  background: linear-gradient(135deg, var(--osset-accent), var(--osset-accent-2));
+  border-color: transparent;
+}
+.osset-toggle[aria-checked="true"] .osset-toggle-thumb {
+  left: 20px;
+  background: white;
+}
+
+/* ----------------------------------------------------------------------------
+ * Slider control
+ * --------------------------------------------------------------------------*/
+.osset-slider {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+.osset-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 180px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--osset-bg-soft);
+  border: 1px solid var(--osset-border);
+  outline: none;
+}
+.osset-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--osset-accent), var(--osset-accent-2));
+  cursor: pointer;
+  border: 2px solid white;
+  margin-top: -6px;
+}
+.osset-slider-input::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--osset-accent), var(--osset-accent-2));
+  cursor: pointer;
+  border: 2px solid white;
+}
+.osset-slider-value {
+  display: inline-block;
+  min-width: 40px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--osset-fg-muted);
+}
+
+/* ----------------------------------------------------------------------------
+ * Select / input
+ * --------------------------------------------------------------------------*/
+.osset-select,
+.osset-input {
+  background: var(--osset-bg);
+  color: var(--osset-fg);
+  border: 1px solid var(--osset-border-2);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.12s ease, background 0.12s ease;
+  min-width: 140px;
+}
+.osset-select:focus,
+.osset-input:focus {
+  border-color: var(--osset-accent-2);
+}
+
+/* ----------------------------------------------------------------------------
+ * Theme swatches
+ * --------------------------------------------------------------------------*/
+.osset-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+.osset-swatch {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--osset-border);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  background: var(--osset-bg);
+  transition: border-color 0.16s ease, transform 0.06s ease, box-shadow 0.16s ease;
+}
+.osset-swatch:hover {
+  border-color: var(--osset-border-2);
+}
+.osset-swatch.is-active {
+  border-color: var(--osset-accent-2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--osset-accent-2) 35%, transparent);
+}
+.osset-swatch-preview {
+  height: 60px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #444, #888);
+  margin-bottom: 8px;
+  border: 1px solid var(--osset-border);
+  position: relative;
+  overflow: hidden;
+}
+.osset-swatch-preview::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.osset-swatch-name {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.osset-swatch-tag {
+  font-size: 10.5px;
+  color: var(--osset-fg-faint);
+  margin-top: 1px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Wallpaper picker
+ * --------------------------------------------------------------------------*/
+.osset-wp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.osset-wp-item {
+  position: relative;
+  height: 86px;
+  border-radius: 8px;
+  border: 1px solid var(--osset-border);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.10s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.osset-wp-item:hover {
+  border-color: var(--osset-border-2);
+  transform: translateY(-1px);
+}
+.osset-wp-item.is-active {
+  border-color: var(--osset-accent-2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--osset-accent-2) 30%, transparent);
+}
+.osset-wp-name {
+  position: absolute;
+  inset: auto 6px 6px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ----------------------------------------------------------------------------
+ * Avatar gallery
+ * --------------------------------------------------------------------------*/
+.osset-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 44px);
+  gap: 8px;
+}
+.osset-avatar-item {
+  width: 44px; height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 22px;
+  background: var(--osset-bg-soft);
+  transition: transform 0.10s ease, border-color 0.16s ease;
+}
+.osset-avatar-item:hover { transform: scale(1.06); }
+.osset-avatar-item.is-active {
+  border-color: var(--osset-accent-2);
+}
+
+/* ----------------------------------------------------------------------------
+ * Color picker (compact)
+ * --------------------------------------------------------------------------*/
+.osset-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.osset-color input[type="color"] {
+  width: 36px; height: 28px;
+  border: 1px solid var(--osset-border-2);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  padding: 1px;
+}
+.osset-color-swatches {
+  display: inline-flex;
+  gap: 4px;
+}
+.osset-color-chip {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--osset-border);
+  transition: transform 0.10s ease;
+}
+.osset-color-chip:hover { transform: scale(1.12); }
+.osset-color-chip.is-active { border-color: var(--osset-fg); }
+
+/* ----------------------------------------------------------------------------
+ * Shortcut table
+ * --------------------------------------------------------------------------*/
+.osset-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.osset-table th, .osset-table td {
+  padding: 8px 10px;
+  border-top: 1px solid var(--osset-border);
+  text-align: left;
+  vertical-align: middle;
+}
+.osset-table th {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--osset-fg-faint);
+  font-weight: 600;
+  border-top: none;
+}
+kbd.osset-kbd {
+  display: inline-block;
+  background: var(--osset-bg-soft);
+  border: 1px solid var(--osset-border-2);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  color: var(--osset-fg);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+}
+
+/* ----------------------------------------------------------------------------
+ * About logo / tile
+ * --------------------------------------------------------------------------*/
+.osset-about-logo {
+  font-family: "JetBrains Mono", monospace;
+  white-space: pre;
+  line-height: 1.0;
+  color: var(--osset-accent-2);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--osset-accent-2) 40%, transparent);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--osset-accent) 12%, transparent),
+    transparent);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--osset-border);
+  margin-bottom: 14px;
+}
+.osset-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  font-size: 12.5px;
+}
+.osset-about-grid .k {
+  color: var(--osset-fg-faint);
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+}
+.osset-about-grid .v {
+  font-weight: 600;
+  color: var(--osset-fg);
+}
+
+/* Apps list table */
+.osset-apps-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+.osset-apps-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--osset-border);
+  border-radius: 8px;
+  background: var(--osset-bg);
+}
+.osset-apps-card .glyph {
+  width: 26px; height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: var(--osset-bg-soft);
+  border-radius: 6px;
+}
+.osset-apps-card .meta { font-size: 12px; }
+.osset-apps-card .meta strong { display: block; font-weight: 600; }
+.osset-apps-card .meta small { color: var(--osset-fg-faint); }
+
+/* ----------------------------------------------------------------------------
+ * Modal
+ * --------------------------------------------------------------------------*/
+.osset-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: osset-fade-in 0.16s ease;
+}
+@keyframes osset-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.osset-modal {
+  width: min(420px, 92%);
+  background: var(--osset-bg-alt);
+  border: 1px solid var(--osset-border-2);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--osset-shadow);
+  animation: osset-pop-in 0.16s ease;
+}
+@keyframes osset-pop-in {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1.0); opacity: 1; }
+}
+.osset-modal-title {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.osset-modal-body {
+  margin: 0 0 14px 0;
+  color: var(--osset-fg-muted);
+  font-size: 13px;
+}
+.osset-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Misc
+ * --------------------------------------------------------------------------*/
+.osset-pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  background: var(--osset-bg-soft);
+  border: 1px solid var(--osset-border);
+  color: var(--osset-fg-muted);
+  letter-spacing: 0.3px;
+}
+.osset-pill.is-online   { color: var(--osset-success); border-color: rgba(16,185,129,0.32); }
+.osset-pill.is-offline  { color: var(--osset-warn); border-color: rgba(245,158,11,0.28); }
+.osset-pill.is-error    { color: var(--osset-danger); border-color: rgba(239,68,68,0.32); }
+
+.osset-divider {
+  height: 1px;
+  background: var(--osset-border);
+  margin: 10px 0;
+}
+
+.osset-storage-bar {
+  width: 240px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--osset-bg-soft);
+  border: 1px solid var(--osset-border);
+  overflow: hidden;
+}
+.osset-storage-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--osset-accent-2), var(--osset-accent));
+}
+
+/* End of stylesheet */

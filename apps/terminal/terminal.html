@@ -1,0 +1,138 @@
+<!--
+  WebOS — OsTerminal HTML shell
+  ============================================================================
+  This file provides the static markup that js/terminal.js mounts into.
+  The Terminal app supports multiple tab instances; each tab renders its own
+  output buffer and prompt in the .term-tab-page element.
+-->
+
+<div class="osterm-root" data-scheme="dark" data-fontsize="14">
+
+  <!-- ======================================================================
+       TOP TOOLBAR
+       ====================================================================== -->
+  <div class="osterm-toolbar" role="toolbar" aria-label="Terminal toolbar">
+
+    <div class="osterm-toolbar-left">
+      <div class="osterm-brand" aria-hidden="true">
+        <span class="osterm-brand-glyph">▚</span>
+        <span class="osterm-brand-name">OsTerminal</span>
+      </div>
+
+      <div class="osterm-divider"></div>
+
+      <div class="osterm-tools-group">
+        <button class="osterm-btn" id="osterm-btn-clear" title="Clear terminal (Ctrl+L)">
+          <span class="osterm-btn-glyph">⌫</span>
+          <span class="osterm-btn-label">Clear</span>
+        </button>
+
+        <button class="osterm-btn" id="osterm-btn-copy" title="Copy selection">
+          <span class="osterm-btn-glyph">⎘</span>
+          <span class="osterm-btn-label">Copy</span>
+        </button>
+
+        <button class="osterm-btn" id="osterm-btn-paste" title="Paste">
+          <span class="osterm-btn-glyph">⎗</span>
+          <span class="osterm-btn-label">Paste</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="osterm-toolbar-center">
+      <div class="osterm-tools-group" aria-label="Color scheme">
+        <label class="osterm-label" for="osterm-scheme">Scheme</label>
+        <select class="osterm-select" id="osterm-scheme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="solarized">Solarized</option>
+          <option value="dracula">Dracula</option>
+          <option value="monokai">Monokai</option>
+        </select>
+      </div>
+
+      <div class="osterm-divider"></div>
+
+      <div class="osterm-tools-group" aria-label="Font size">
+        <label class="osterm-label">Font</label>
+        <button class="osterm-btn osterm-btn-icon" id="osterm-font-down" title="Decrease font size (Ctrl+-)">
+          <span class="osterm-btn-glyph">−</span>
+        </button>
+        <span class="osterm-fontsize-display" id="osterm-fontsize-display">14px</span>
+        <button class="osterm-btn osterm-btn-icon" id="osterm-font-up" title="Increase font size (Ctrl+=)">
+          <span class="osterm-btn-glyph">+</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="osterm-toolbar-right">
+      <div class="osterm-status">
+        <span class="osterm-status-dot" id="osterm-status-dot"></span>
+        <span class="osterm-status-text" id="osterm-status-text">Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       TAB BAR
+       ====================================================================== -->
+  <div class="osterm-tabbar" role="tablist" aria-label="Terminal tabs">
+    <div class="osterm-tabs" id="osterm-tabs"></div>
+    <button class="osterm-tab-add" id="osterm-tab-add" title="New tab (Ctrl+Shift+T)">
+      <span class="osterm-tab-add-glyph">＋</span>
+    </button>
+  </div>
+
+  <!-- ======================================================================
+       TAB PAGES (each tab renders into its own .osterm-page container)
+       ====================================================================== -->
+  <div class="osterm-pages" id="osterm-pages"></div>
+
+  <!-- ======================================================================
+       HIDDEN PAGE TEMPLATE
+       Cloned by terminal.js to instantiate a new tab.
+       ====================================================================== -->
+  <template id="osterm-page-template">
+    <div class="osterm-page" data-tab-id="">
+      <div class="osterm-output" tabindex="0" role="log" aria-live="polite"></div>
+      <div class="osterm-input-row">
+        <span class="osterm-prompt"></span>
+        <span class="osterm-input-wrap">
+          <span class="osterm-input-text"></span>
+          <span class="osterm-cursor" aria-hidden="true">█</span>
+        </span>
+      </div>
+      <div class="osterm-completions" hidden></div>
+    </div>
+  </template>
+
+  <!-- Hidden, shared input. Captures keystrokes for the active tab.   -->
+  <input
+    type="text"
+    id="osterm-shadow-input"
+    class="osterm-shadow-input"
+    aria-hidden="true"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  />
+
+  <!-- Reverse search overlay (Ctrl+R) -->
+  <div class="osterm-rsearch" id="osterm-rsearch" hidden>
+    <div class="osterm-rsearch-box">
+      <div class="osterm-rsearch-label">(reverse-i-search)</div>
+      <div class="osterm-rsearch-text">
+        <span class="osterm-rsearch-query" id="osterm-rsearch-query"></span><span class="osterm-rsearch-cursor">█</span>
+      </div>
+      <div class="osterm-rsearch-result" id="osterm-rsearch-result"></div>
+      <div class="osterm-rsearch-hint">Ctrl+R: prev · Esc: cancel · Enter: accept</div>
+    </div>
+  </div>
+
+  <!-- Snake game overlay -->
+  <div class="osterm-snake-hud" id="osterm-snake-hud" hidden>
+    <span class="osterm-snake-score">Score: <b id="osterm-snake-score">0</b></span>
+    <span class="osterm-snake-hint">Arrows to move · Q to quit</span>
+  </div>
+</div>

@@ -1,0 +1,369 @@
+<!-- ============================================================================
+     OsPaint — WebOS Paint application (Photoshop-flavored, dark UI)
+     ----------------------------------------------------------------------------
+     This file is loaded by paint.js into a WebOS window body. Every interactive
+     element has a stable id or data-action so the JS layer can wire it without
+     hunting for nodes. No inline scripts, no inline event handlers.
+     Loading order is documented in index.html.
+     ========================================================================= -->
+<div class="paint-app" data-paint-root>
+
+  <!-- ============================================================
+       1. TOP MENUBAR
+       ============================================================ -->
+  <div class="paint-menubar" role="menubar" data-paint-menubar>
+    <div class="paint-menu" data-menu="file"  role="menuitem" tabindex="0">File</div>
+    <div class="paint-menu" data-menu="edit"  role="menuitem" tabindex="0">Edit</div>
+    <div class="paint-menu" data-menu="image" role="menuitem" tabindex="0">Image</div>
+    <div class="paint-menu" data-menu="layer" role="menuitem" tabindex="0">Layer</div>
+    <div class="paint-menu" data-menu="view"  role="menuitem" tabindex="0">View</div>
+    <div class="paint-menu" data-menu="help"  role="menuitem" tabindex="0">Help</div>
+
+    <div class="paint-menu-spacer"></div>
+    <div class="paint-doc-name" data-paint-doc-name title="Document name">Untitled — 800×600</div>
+  </div>
+
+  <!-- ============================================================
+       2. OPTIONS BAR (changes per tool)
+       ============================================================ -->
+  <div class="paint-optionsbar" data-paint-optionsbar>
+    <div class="paint-options-tool-icon" data-paint-current-tool-ico>✎</div>
+    <div class="paint-options-tool-label" data-paint-current-tool-label>Pencil</div>
+    <div class="paint-options-divider"></div>
+
+    <!-- Brush size -->
+    <div class="paint-option" data-option="size">
+      <label>Size</label>
+      <input type="range" min="1" max="200" step="1" value="6" data-paint-size-range />
+      <input type="number" min="1" max="200" step="1" value="6" data-paint-size-num />
+      <span>px</span>
+    </div>
+
+    <!-- Hardness -->
+    <div class="paint-option" data-option="hardness">
+      <label>Hardness</label>
+      <input type="range" min="0" max="100" step="1" value="80" data-paint-hardness-range />
+      <span data-paint-hardness-val>80%</span>
+    </div>
+
+    <!-- Opacity -->
+    <div class="paint-option" data-option="opacity">
+      <label>Opacity</label>
+      <input type="range" min="1" max="100" step="1" value="100" data-paint-opacity-range />
+      <span data-paint-opacity-val>100%</span>
+    </div>
+
+    <!-- Flow -->
+    <div class="paint-option" data-option="flow">
+      <label>Flow</label>
+      <input type="range" min="1" max="100" step="1" value="100" data-paint-flow-range />
+      <span data-paint-flow-val>100%</span>
+    </div>
+
+    <!-- Smoothing -->
+    <div class="paint-option" data-option="smoothing">
+      <label>Smooth</label>
+      <input type="range" min="0" max="100" step="1" value="0" data-paint-smoothing-range />
+      <span data-paint-smoothing-val>0%</span>
+    </div>
+
+    <div class="paint-options-divider"></div>
+
+    <!-- Shape options -->
+    <div class="paint-option" data-option="shape-fill">
+      <label>Fill</label>
+      <input type="checkbox" checked data-paint-shape-fill />
+    </div>
+    <div class="paint-option" data-option="shape-stroke">
+      <label>Stroke</label>
+      <input type="checkbox" checked data-paint-shape-stroke />
+    </div>
+    <div class="paint-option" data-option="shape-strokew">
+      <label>Stroke W</label>
+      <input type="number" min="1" max="50" step="1" value="2" data-paint-shape-strokew />
+      <span>px</span>
+    </div>
+    <div class="paint-option" data-option="shape-sides">
+      <label>Sides</label>
+      <input type="number" min="3" max="32" step="1" value="6" data-paint-shape-sides />
+    </div>
+    <div class="paint-option" data-option="shape-points">
+      <label>Points</label>
+      <input type="number" min="3" max="20" step="1" value="5" data-paint-shape-points />
+    </div>
+    <div class="paint-option" data-option="shape-inner">
+      <label>Inner</label>
+      <input type="range" min="10" max="90" step="1" value="50" data-paint-shape-inner />
+      <span data-paint-shape-inner-val>50%</span>
+    </div>
+
+    <div class="paint-options-divider"></div>
+
+    <!-- Text options -->
+    <div class="paint-option" data-option="text-font">
+      <label>Font</label>
+      <select data-paint-text-font>
+        <option>Inter</option><option>Arial</option><option>Helvetica</option>
+        <option>Georgia</option><option>Times New Roman</option><option>Courier New</option>
+        <option>Verdana</option><option>Tahoma</option><option>Trebuchet MS</option>
+        <option>Comic Sans MS</option><option>Impact</option><option>Lucida Console</option>
+        <option>Press Start 2P</option><option>JetBrains Mono</option>
+      </select>
+    </div>
+    <div class="paint-option" data-option="text-size">
+      <label>Size</label>
+      <input type="number" min="6" max="400" step="1" value="32" data-paint-text-size />
+      <span>px</span>
+    </div>
+    <div class="paint-option" data-option="text-style">
+      <label>Style</label>
+      <button type="button" class="paint-tbtn" data-paint-text-bold title="Bold (B)"><b>B</b></button>
+      <button type="button" class="paint-tbtn" data-paint-text-italic title="Italic (I)"><i>I</i></button>
+      <button type="button" class="paint-tbtn" data-paint-text-under title="Underline"><u>U</u></button>
+    </div>
+
+    <div class="paint-options-divider"></div>
+
+    <!-- Selection options -->
+    <div class="paint-option" data-option="select-feather">
+      <label>Feather</label>
+      <input type="number" min="0" max="50" step="1" value="0" data-paint-select-feather />
+      <span>px</span>
+    </div>
+    <div class="paint-option" data-option="select-mode">
+      <label>Mode</label>
+      <select data-paint-select-mode>
+        <option value="new">New</option>
+        <option value="add">Add</option>
+        <option value="sub">Subtract</option>
+        <option value="int">Intersect</option>
+      </select>
+    </div>
+
+    <div class="paint-options-divider"></div>
+
+    <!-- Fill bucket options -->
+    <div class="paint-option" data-option="fill-tolerance">
+      <label>Tolerance</label>
+      <input type="range" min="0" max="255" step="1" value="32" data-paint-fill-tolerance />
+      <span data-paint-fill-tolerance-val>32</span>
+    </div>
+    <div class="paint-option" data-option="fill-contig">
+      <label>Contiguous</label>
+      <input type="checkbox" checked data-paint-fill-contig />
+    </div>
+
+    <div class="paint-options-divider"></div>
+
+    <!-- Eyedropper -->
+    <div class="paint-option" data-option="eye-sample">
+      <label>Sample</label>
+      <select data-paint-eye-sample>
+        <option value="layer">Active Layer</option>
+        <option value="all">All Layers</option>
+      </select>
+    </div>
+
+    <!-- Move tool -->
+    <div class="paint-option" data-option="move-snap">
+      <label>Snap</label>
+      <input type="checkbox" data-paint-move-snap />
+    </div>
+
+    <!-- Eraser hardness -->
+    <div class="paint-option" data-option="eraser-hardness">
+      <label>Hardness</label>
+      <input type="range" min="0" max="100" step="1" value="100" data-paint-eraser-hardness />
+      <span data-paint-eraser-hardness-val>100%</span>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       3. WORKSPACE (toolbar + canvas + layers)
+       ============================================================ -->
+  <div class="paint-workspace">
+
+    <!-- Left toolbar -->
+    <div class="paint-toolbar" role="toolbar" data-paint-toolbar>
+      <button class="paint-tool" data-tool="move"      title="Move (V)">✥</button>
+      <button class="paint-tool" data-tool="select"    title="Select Rectangle (M)">▭</button>
+      <button class="paint-tool active" data-tool="pencil" title="Pencil (P)">✎</button>
+      <button class="paint-tool" data-tool="brush"     title="Brush (B)">🖌</button>
+      <button class="paint-tool" data-tool="eraser"    title="Eraser (E)">🧽</button>
+      <button class="paint-tool" data-tool="fill"      title="Fill Bucket (G)">🪣</button>
+      <button class="paint-tool" data-tool="eyedropper" title="Eyedropper (I)">💧</button>
+      <button class="paint-tool" data-tool="text"      title="Text (T)">T</button>
+      <button class="paint-tool has-flyout" data-tool="rect"     title="Rectangle">▢</button>
+      <button class="paint-tool has-flyout" data-tool="ellipse"  title="Ellipse">◯</button>
+      <button class="paint-tool has-flyout" data-tool="line"     title="Line">╱</button>
+      <button class="paint-tool has-flyout" data-tool="triangle" title="Triangle">△</button>
+      <button class="paint-tool has-flyout" data-tool="polygon"  title="Polygon">⬡</button>
+      <button class="paint-tool has-flyout" data-tool="star"     title="Star">★</button>
+      <button class="paint-tool" data-tool="zoom"      title="Zoom (Z)">🔍</button>
+      <button class="paint-tool" data-tool="hand"      title="Hand / Pan (H)">✋</button>
+
+      <div class="paint-toolbar-spacer"></div>
+
+      <!-- Color swatches -->
+      <div class="paint-swatches" data-paint-swatches>
+        <div class="paint-swatch paint-swatch-bg" data-paint-bg
+             title="Background — click to pick" style="background:#ffffff;"></div>
+        <div class="paint-swatch paint-swatch-fg" data-paint-fg
+             title="Foreground — click to pick" style="background:#000000;"></div>
+        <button class="paint-swap" data-paint-swap title="Swap (X)">⇄</button>
+        <button class="paint-reset-colors" data-paint-reset-colors title="Reset (D)">▣</button>
+      </div>
+    </div>
+
+    <!-- Canvas viewport -->
+    <div class="paint-canvas-host" data-paint-canvas-host>
+      <div class="paint-rulers paint-rulers-h" data-paint-ruler-h></div>
+      <div class="paint-rulers paint-rulers-v" data-paint-ruler-v></div>
+      <div class="paint-viewport" data-paint-viewport>
+        <div class="paint-stage" data-paint-stage>
+          <canvas class="paint-display" data-paint-display></canvas>
+          <canvas class="paint-overlay" data-paint-overlay></canvas>
+          <div class="paint-text-input" data-paint-text-input contenteditable="true" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side panels -->
+    <div class="paint-rightcol">
+
+      <!-- Color picker panel -->
+      <div class="paint-panel" data-panel="colorpicker">
+        <div class="paint-panel-head">
+          <span>Color</span>
+          <span class="paint-panel-collapse" data-collapse="colorpicker">−</span>
+        </div>
+        <div class="paint-panel-body">
+          <div class="paint-cp-wheel" data-paint-cp-wheel>
+            <canvas data-paint-cp-canvas width="180" height="180"></canvas>
+            <div class="paint-cp-marker" data-paint-cp-marker></div>
+          </div>
+          <div class="paint-cp-row">
+            <label>H</label>
+            <input type="range" min="0" max="360" value="0" data-paint-cp-h />
+            <input type="number" min="0" max="360" value="0" data-paint-cp-h-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>S</label>
+            <input type="range" min="0" max="100" value="0" data-paint-cp-s />
+            <input type="number" min="0" max="100" value="0" data-paint-cp-s-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>L</label>
+            <input type="range" min="0" max="100" value="0" data-paint-cp-l />
+            <input type="number" min="0" max="100" value="0" data-paint-cp-l-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>R</label>
+            <input type="range" min="0" max="255" value="0" data-paint-cp-r />
+            <input type="number" min="0" max="255" value="0" data-paint-cp-r-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>G</label>
+            <input type="range" min="0" max="255" value="0" data-paint-cp-g />
+            <input type="number" min="0" max="255" value="0" data-paint-cp-g-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>B</label>
+            <input type="range" min="0" max="255" value="0" data-paint-cp-b />
+            <input type="number" min="0" max="255" value="0" data-paint-cp-b-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>A</label>
+            <input type="range" min="0" max="100" value="100" data-paint-cp-a />
+            <input type="number" min="0" max="100" value="100" data-paint-cp-a-num />
+          </div>
+          <div class="paint-cp-row">
+            <label>HEX</label>
+            <input type="text" value="#000000" maxlength="9" data-paint-cp-hex />
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom palette -->
+      <div class="paint-panel" data-panel="palette">
+        <div class="paint-panel-head">
+          <span>Palette</span>
+          <span class="paint-panel-collapse" data-collapse="palette">−</span>
+        </div>
+        <div class="paint-panel-body">
+          <div class="paint-palette" data-paint-palette></div>
+          <div class="paint-recent" data-paint-recent>
+            <div class="paint-recent-label">Recent</div>
+            <div class="paint-recent-row" data-paint-recent-row></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layers panel -->
+      <div class="paint-panel paint-panel-layers" data-panel="layers">
+        <div class="paint-panel-head">
+          <span>Layers</span>
+          <span class="paint-panel-collapse" data-collapse="layers">−</span>
+        </div>
+        <div class="paint-panel-body">
+          <div class="paint-layer-blend">
+            <select data-paint-layer-blend>
+              <option value="source-over">Normal</option>
+              <option value="multiply">Multiply</option>
+              <option value="screen">Screen</option>
+              <option value="overlay">Overlay</option>
+              <option value="darken">Darken</option>
+              <option value="lighten">Lighten</option>
+            </select>
+            <div class="paint-layer-opacity-wrap">
+              <label>Opacity</label>
+              <input type="range" min="0" max="100" step="1" value="100" data-paint-layer-opacity />
+              <span data-paint-layer-opacity-val>100%</span>
+            </div>
+          </div>
+          <div class="paint-layer-list" data-paint-layer-list></div>
+          <div class="paint-layer-actions">
+            <button title="Add Layer"      data-layer-action="add">＋</button>
+            <button title="Duplicate"      data-layer-action="dup">⎘</button>
+            <button title="Move Up"        data-layer-action="up">▲</button>
+            <button title="Move Down"      data-layer-action="down">▼</button>
+            <button title="Merge Down"     data-layer-action="mergedown">⇩</button>
+            <button title="Delete"         data-layer-action="del">🗑</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       4. STATUS BAR
+       ============================================================ -->
+  <div class="paint-statusbar">
+    <span class="paint-status-coord" data-paint-status-coord>0, 0</span>
+    <span class="paint-status-divider">|</span>
+    <span class="paint-status-size"  data-paint-status-size>800 × 600</span>
+    <span class="paint-status-divider">|</span>
+    <span class="paint-status-zoom"  data-paint-status-zoom>100%</span>
+    <span class="paint-status-divider">|</span>
+    <span class="paint-status-color">
+      <span class="paint-status-swatch" data-paint-status-color-swatch style="background:#000;"></span>
+      <span data-paint-status-color-hex>#000000</span>
+    </span>
+    <span class="paint-status-divider">|</span>
+    <span class="paint-status-tool"  data-paint-status-tool>Pencil</span>
+    <span class="paint-status-spacer"></span>
+    <span class="paint-status-mem"   data-paint-status-mem>—</span>
+  </div>
+
+  <!-- Hidden file inputs for image import -->
+  <input type="file" accept="image/*" data-paint-file-input hidden />
+
+  <!-- Modal overlay container (used for new-canvas dialog, resize, save-as, etc) -->
+  <div class="paint-modal-root" data-paint-modal-root hidden></div>
+
+  <!-- Floating menu container (for top menubar dropdowns) -->
+  <div class="paint-floating-menu" data-paint-floating-menu hidden></div>
+
+</div>

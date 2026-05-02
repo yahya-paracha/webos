@@ -1,0 +1,123 @@
+<!--
+  OsTetris — tetris.html
+  Markup template injected into a WindowManager window body.
+  Styled by tetris.css; behaviour in js/tetris.js.
+-->
+<div class="tetris-app" id="tetris-root">
+
+  <!-- Top toolbar ============================================== -->
+  <div class="tt-toolbar">
+    <button class="tt-btn tt-btn-primary" data-act="new"   title="New Game (R)">▶ New</button>
+    <button class="tt-btn"                data-act="pause" title="Pause (P)">❚❚ Pause</button>
+    <button class="tt-btn"                data-act="restart" title="Restart">⟳ Restart</button>
+    <span class="tt-spacer"></span>
+    <select class="tt-select" data-act="startlevel" title="Starting level">
+      <option value="1" selected>Level 1</option>
+      <option value="3">Level 3</option>
+      <option value="5">Level 5</option>
+      <option value="8">Level 8</option>
+      <option value="10">Level 10</option>
+      <option value="15">Level 15</option>
+    </select>
+    <button class="tt-btn tt-btn-icon" data-act="sound" title="Sound on/off">🔊</button>
+    <button class="tt-btn tt-btn-icon" data-act="scores" title="High Scores">🏆</button>
+  </div>
+
+  <!-- Main play area ============================================ -->
+  <div class="tt-stage">
+
+    <!-- LEFT: hold + score -->
+    <aside class="tt-side tt-side-left">
+      <div class="tt-panel">
+        <div class="tt-panel-title">HOLD</div>
+        <canvas class="tt-mini" id="tt-hold" width="120" height="120"></canvas>
+      </div>
+      <div class="tt-panel">
+        <div class="tt-panel-title">SCORE</div>
+        <div class="tt-num" id="tt-score">0</div>
+      </div>
+      <div class="tt-panel">
+        <div class="tt-panel-title">HIGH</div>
+        <div class="tt-num small" id="tt-high">0</div>
+      </div>
+    </aside>
+
+    <!-- CENTER: playfield -->
+    <section class="tt-center">
+      <div class="tt-board-wrap">
+        <canvas class="tt-board" id="tt-board" width="300" height="600"></canvas>
+
+        <!-- pause overlay -->
+        <div class="tt-overlay" id="tt-pause-ov" hidden>
+          <div class="tt-ov-card">
+            <h2>PAUSED</h2>
+            <p>Press <kbd>P</kbd> to resume</p>
+          </div>
+        </div>
+        <!-- game over overlay -->
+        <div class="tt-overlay" id="tt-over-ov" hidden>
+          <div class="tt-ov-card">
+            <h2>GAME OVER</h2>
+            <div class="tt-ov-stats">
+              <div class="tt-ov-stat"><span>Score</span><b data-go="score">0</b></div>
+              <div class="tt-ov-stat"><span>Lines</span><b data-go="lines">0</b></div>
+              <div class="tt-ov-stat"><span>Level</span><b data-go="level">1</b></div>
+              <div class="tt-ov-stat"><span>Time</span><b data-go="time">0:00</b></div>
+            </div>
+            <p data-go="rank" class="tt-ov-rank"></p>
+            <button class="tt-btn tt-btn-primary" data-act="new">Play Again</button>
+          </div>
+        </div>
+        <!-- ready/intro overlay -->
+        <div class="tt-overlay" id="tt-ready-ov">
+          <div class="tt-ov-card">
+            <h2>OsTetris</h2>
+            <p>Press <kbd>Space</kbd> or <b>New</b> to start</p>
+            <button class="tt-btn tt-btn-primary" data-act="new">▶ Start</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: next + stats -->
+    <aside class="tt-side tt-side-right">
+      <div class="tt-panel">
+        <div class="tt-panel-title">NEXT</div>
+        <canvas class="tt-mini" id="tt-next-1" width="120" height="80"></canvas>
+        <canvas class="tt-mini" id="tt-next-2" width="100" height="60"></canvas>
+        <canvas class="tt-mini" id="tt-next-3" width="100" height="60"></canvas>
+      </div>
+      <div class="tt-panel">
+        <div class="tt-panel-title">LEVEL</div>
+        <div class="tt-num" id="tt-level">1</div>
+      </div>
+      <div class="tt-panel">
+        <div class="tt-panel-title">LINES</div>
+        <div class="tt-num small" id="tt-lines">0</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer controls reference ================================== -->
+  <div class="tt-controls">
+    <span><kbd>←</kbd><kbd>→</kbd> Move</span>
+    <span><kbd>↓</kbd> Soft</span>
+    <span><kbd>Space</kbd> Hard</span>
+    <span><kbd>↑</kbd>/<kbd>X</kbd> Rotate CW</span>
+    <span><kbd>Z</kbd> Rotate CCW</span>
+    <span><kbd>C</kbd> Hold</span>
+    <span><kbd>P</kbd> Pause</span>
+  </div>
+
+  <!-- High scores modal ======================================== -->
+  <div class="tt-modal-backdrop" id="tt-scores-modal" hidden>
+    <div class="tt-modal">
+      <h3>High Scores</h3>
+      <div class="tt-scores-list" id="tt-scores-list"></div>
+      <div class="tt-set-actions">
+        <button class="tt-btn" data-act="reset-scores">Clear</button>
+        <button class="tt-btn tt-btn-primary" data-act="close-scores">Done</button>
+      </div>
+    </div>
+  </div>
+</div>

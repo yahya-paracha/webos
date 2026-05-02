@@ -1,0 +1,996 @@
+/* ============================================================================
+ * WebOS — OsTerminal stylesheet
+ * ----------------------------------------------------------------------------
+ * Provides:
+ *   - Classic terminal aesthetic (monospace, glowing cursor)
+ *   - Five color schemes: dark, light, solarized, dracula, monokai
+ *   - Blinking cursor animation
+ *   - ANSI color classes (.ansi-fg-*, .ansi-bg-*, .ansi-bold etc.)
+ *   - Tab bar styling with smooth slide animations
+ *   - Scrollback buffer with custom scrollbar
+ *   - Reverse search overlay
+ *   - Snake game HUD
+ * ==========================================================================*/
+
+/* ----------------------------------------------------------------------------
+ * Color scheme variables
+ * Each scheme defines:
+ *   --ot-bg, --ot-fg, --ot-prompt, --ot-cursor,
+ *   --ot-toolbar, --ot-tab, --ot-tab-active,
+ *   --ot-border, --ot-muted, --ot-accent,
+ *   --ot-ansi-black ... --ot-ansi-white,
+ *   --ot-ansi-bblack ... --ot-ansi-bwhite (bright variants)
+ * --------------------------------------------------------------------------*/
+
+.osterm-root[data-scheme="dark"] {
+  --ot-bg:        #0d1117;
+  --ot-bg-alt:    #161b22;
+  --ot-fg:        #e6edf3;
+  --ot-prompt:    #7ee787;
+  --ot-cursor:    #58a6ff;
+  --ot-toolbar:   #161b22;
+  --ot-tab:       #1c2330;
+  --ot-tab-active:#0d1117;
+  --ot-border:    #30363d;
+  --ot-muted:     #8b949e;
+  --ot-accent:    #58a6ff;
+  --ot-selection: #264f78aa;
+
+  --ot-ansi-black:   #484f58;
+  --ot-ansi-red:     #ff7b72;
+  --ot-ansi-green:   #7ee787;
+  --ot-ansi-yellow:  #f2cc60;
+  --ot-ansi-blue:    #79c0ff;
+  --ot-ansi-magenta: #d2a8ff;
+  --ot-ansi-cyan:    #56d4dd;
+  --ot-ansi-white:   #b1bac4;
+
+  --ot-ansi-bblack:   #6e7681;
+  --ot-ansi-bred:     #ffa198;
+  --ot-ansi-bgreen:   #56d364;
+  --ot-ansi-byellow:  #e3b341;
+  --ot-ansi-bblue:    #58a6ff;
+  --ot-ansi-bmagenta: #bc8cff;
+  --ot-ansi-bcyan:    #76d4d9;
+  --ot-ansi-bwhite:   #ffffff;
+}
+
+.osterm-root[data-scheme="light"] {
+  --ot-bg:        #ffffff;
+  --ot-bg-alt:    #f6f8fa;
+  --ot-fg:        #1f2328;
+  --ot-prompt:    #1a7f37;
+  --ot-cursor:    #0969da;
+  --ot-toolbar:   #f6f8fa;
+  --ot-tab:       #eaeef2;
+  --ot-tab-active:#ffffff;
+  --ot-border:    #d0d7de;
+  --ot-muted:     #6e7781;
+  --ot-accent:    #0969da;
+  --ot-selection: #b6e3ff80;
+
+  --ot-ansi-black:   #1f2328;
+  --ot-ansi-red:     #cf222e;
+  --ot-ansi-green:   #1a7f37;
+  --ot-ansi-yellow:  #9a6700;
+  --ot-ansi-blue:    #0969da;
+  --ot-ansi-magenta: #8250df;
+  --ot-ansi-cyan:    #1b7c83;
+  --ot-ansi-white:   #6e7781;
+
+  --ot-ansi-bblack:   #57606a;
+  --ot-ansi-bred:     #a40e26;
+  --ot-ansi-bgreen:   #116329;
+  --ot-ansi-byellow:  #4d2d00;
+  --ot-ansi-bblue:    #0550ae;
+  --ot-ansi-bmagenta: #6639ba;
+  --ot-ansi-bcyan:    #3192aa;
+  --ot-ansi-bwhite:   #24292f;
+}
+
+.osterm-root[data-scheme="solarized"] {
+  --ot-bg:        #002b36;
+  --ot-bg-alt:    #073642;
+  --ot-fg:        #93a1a1;
+  --ot-prompt:    #859900;
+  --ot-cursor:    #b58900;
+  --ot-toolbar:   #073642;
+  --ot-tab:       #073642;
+  --ot-tab-active:#002b36;
+  --ot-border:    #586e75;
+  --ot-muted:     #586e75;
+  --ot-accent:    #268bd2;
+  --ot-selection: #073642;
+
+  --ot-ansi-black:   #073642;
+  --ot-ansi-red:     #dc322f;
+  --ot-ansi-green:   #859900;
+  --ot-ansi-yellow:  #b58900;
+  --ot-ansi-blue:    #268bd2;
+  --ot-ansi-magenta: #d33682;
+  --ot-ansi-cyan:    #2aa198;
+  --ot-ansi-white:   #eee8d5;
+
+  --ot-ansi-bblack:   #002b36;
+  --ot-ansi-bred:     #cb4b16;
+  --ot-ansi-bgreen:   #586e75;
+  --ot-ansi-byellow:  #657b83;
+  --ot-ansi-bblue:    #839496;
+  --ot-ansi-bmagenta: #6c71c4;
+  --ot-ansi-bcyan:    #93a1a1;
+  --ot-ansi-bwhite:   #fdf6e3;
+}
+
+.osterm-root[data-scheme="dracula"] {
+  --ot-bg:        #282a36;
+  --ot-bg-alt:    #21222c;
+  --ot-fg:        #f8f8f2;
+  --ot-prompt:    #50fa7b;
+  --ot-cursor:    #ff79c6;
+  --ot-toolbar:   #21222c;
+  --ot-tab:       #343746;
+  --ot-tab-active:#282a36;
+  --ot-border:    #44475a;
+  --ot-muted:     #6272a4;
+  --ot-accent:    #bd93f9;
+  --ot-selection: #44475a;
+
+  --ot-ansi-black:   #21222c;
+  --ot-ansi-red:     #ff5555;
+  --ot-ansi-green:   #50fa7b;
+  --ot-ansi-yellow:  #f1fa8c;
+  --ot-ansi-blue:    #bd93f9;
+  --ot-ansi-magenta: #ff79c6;
+  --ot-ansi-cyan:    #8be9fd;
+  --ot-ansi-white:   #f8f8f2;
+
+  --ot-ansi-bblack:   #6272a4;
+  --ot-ansi-bred:     #ff6e6e;
+  --ot-ansi-bgreen:   #69ff94;
+  --ot-ansi-byellow:  #ffffa5;
+  --ot-ansi-bblue:    #d6acff;
+  --ot-ansi-bmagenta: #ff92df;
+  --ot-ansi-bcyan:    #a4ffff;
+  --ot-ansi-bwhite:   #ffffff;
+}
+
+.osterm-root[data-scheme="monokai"] {
+  --ot-bg:        #272822;
+  --ot-bg-alt:    #1e1f1c;
+  --ot-fg:        #f8f8f2;
+  --ot-prompt:    #a6e22e;
+  --ot-cursor:    #f92672;
+  --ot-toolbar:   #1e1f1c;
+  --ot-tab:       #3e3d32;
+  --ot-tab-active:#272822;
+  --ot-border:    #49483e;
+  --ot-muted:     #75715e;
+  --ot-accent:    #66d9ef;
+  --ot-selection: #49483e;
+
+  --ot-ansi-black:   #272822;
+  --ot-ansi-red:     #f92672;
+  --ot-ansi-green:   #a6e22e;
+  --ot-ansi-yellow:  #f4bf75;
+  --ot-ansi-blue:    #66d9ef;
+  --ot-ansi-magenta: #ae81ff;
+  --ot-ansi-cyan:    #a1efe4;
+  --ot-ansi-white:   #f8f8f2;
+
+  --ot-ansi-bblack:   #75715e;
+  --ot-ansi-bred:     #f92672;
+  --ot-ansi-bgreen:   #a6e22e;
+  --ot-ansi-byellow:  #f4bf75;
+  --ot-ansi-bblue:    #66d9ef;
+  --ot-ansi-bmagenta: #ae81ff;
+  --ot-ansi-bcyan:    #a1efe4;
+  --ot-ansi-bwhite:   #f9f8f5;
+}
+
+/* ----------------------------------------------------------------------------
+ * Root layout
+ * --------------------------------------------------------------------------*/
+.osterm-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--ot-bg);
+  color: var(--ot-fg);
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code",
+    "SF Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow: hidden;
+  position: relative;
+  user-select: text;
+}
+
+.osterm-root[data-fontsize="11"] { font-size: 11px; }
+.osterm-root[data-fontsize="12"] { font-size: 12px; }
+.osterm-root[data-fontsize="13"] { font-size: 13px; }
+.osterm-root[data-fontsize="14"] { font-size: 14px; }
+.osterm-root[data-fontsize="15"] { font-size: 15px; }
+.osterm-root[data-fontsize="16"] { font-size: 16px; }
+.osterm-root[data-fontsize="18"] { font-size: 18px; }
+.osterm-root[data-fontsize="20"] { font-size: 20px; }
+.osterm-root[data-fontsize="22"] { font-size: 22px; }
+.osterm-root[data-fontsize="24"] { font-size: 24px; }
+
+/* ----------------------------------------------------------------------------
+ * Toolbar
+ * --------------------------------------------------------------------------*/
+.osterm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ot-toolbar);
+  border-bottom: 1px solid var(--ot-border);
+  padding: 6px 10px;
+  gap: 12px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+
+.osterm-toolbar-left,
+.osterm-toolbar-center,
+.osterm-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.osterm-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ot-accent);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.osterm-brand-glyph {
+  font-size: 16px;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.osterm-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--ot-border);
+  margin: 0 4px;
+}
+
+.osterm-tools-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.osterm-label {
+  color: var(--ot-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.osterm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ot-fg);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+
+.osterm-btn:hover {
+  background: var(--ot-bg);
+  border-color: var(--ot-border);
+}
+
+.osterm-btn:active {
+  transform: translateY(1px);
+}
+
+.osterm-btn-icon {
+  padding: 4px 8px;
+  min-width: 28px;
+  justify-content: center;
+}
+
+.osterm-btn-glyph {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.osterm-btn-label {
+  font-size: 12px;
+}
+
+.osterm-select {
+  background: var(--ot-bg);
+  color: var(--ot-fg);
+  border: 1px solid var(--ot-border);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.osterm-select:focus {
+  border-color: var(--ot-accent);
+}
+
+.osterm-fontsize-display {
+  min-width: 36px;
+  text-align: center;
+  color: var(--ot-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.osterm-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ot-muted);
+  font-size: 11px;
+}
+
+.osterm-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ot-ansi-green);
+  box-shadow: 0 0 6px currentColor;
+  color: var(--ot-ansi-green);
+  animation: ot-pulse 2s ease-in-out infinite;
+}
+
+.osterm-status-dot[data-state="busy"] {
+  color: var(--ot-ansi-yellow);
+  background: var(--ot-ansi-yellow);
+}
+
+.osterm-status-dot[data-state="error"] {
+  color: var(--ot-ansi-red);
+  background: var(--ot-ansi-red);
+}
+
+@keyframes ot-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* ----------------------------------------------------------------------------
+ * Tab bar
+ * --------------------------------------------------------------------------*/
+.osterm-tabbar {
+  display: flex;
+  align-items: center;
+  background: var(--ot-toolbar);
+  border-bottom: 1px solid var(--ot-border);
+  padding: 0;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.osterm-tabs {
+  display: flex;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.osterm-tabs::-webkit-scrollbar {
+  height: 3px;
+}
+
+.osterm-tabs::-webkit-scrollbar-thumb {
+  background: var(--ot-border);
+}
+
+.osterm-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--ot-tab);
+  border: none;
+  border-right: 1px solid var(--ot-border);
+  color: var(--ot-muted);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+  animation: ot-tab-in 0.18s ease;
+  max-width: 240px;
+  min-width: 120px;
+}
+
+@keyframes ot-tab-in {
+  from { transform: translateY(-4px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.osterm-tab:hover {
+  background: var(--ot-bg-alt);
+  color: var(--ot-fg);
+}
+
+.osterm-tab.is-active {
+  background: var(--ot-tab-active);
+  color: var(--ot-fg);
+  border-top: 2px solid var(--ot-accent);
+  margin-top: -2px;
+  padding-top: 7px;
+}
+
+.osterm-tab-icon {
+  font-size: 11px;
+  color: var(--ot-accent);
+}
+
+.osterm-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+.osterm-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: background 0.12s ease, opacity 0.12s ease;
+}
+
+.osterm-tab-close:hover {
+  background: var(--ot-ansi-red);
+  color: #fff;
+  opacity: 1;
+}
+
+.osterm-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
+  background: transparent;
+  border: 1px dashed var(--ot-border);
+  border-radius: 6px;
+  color: var(--ot-muted);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  flex: 0 0 auto;
+}
+
+.osterm-tab-add:hover {
+  background: var(--ot-bg);
+  color: var(--ot-accent);
+  border-color: var(--ot-accent);
+}
+
+.osterm-tab-add-glyph {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* ----------------------------------------------------------------------------
+ * Pages (one per tab)
+ * --------------------------------------------------------------------------*/
+.osterm-pages {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.osterm-page {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  background: var(--ot-bg);
+  padding: 10px 14px 4px 14px;
+  box-sizing: border-box;
+}
+
+.osterm-page.is-active {
+  display: flex;
+  animation: ot-page-in 0.22s ease;
+}
+
+@keyframes ot-page-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------------------------
+ * Output area
+ * --------------------------------------------------------------------------*/
+.osterm-output {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre;
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ot-border) transparent;
+  padding-bottom: 4px;
+}
+
+.osterm-output::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.osterm-output::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.osterm-output::-webkit-scrollbar-thumb {
+  background: var(--ot-border);
+  border-radius: 4px;
+}
+
+.osterm-output::-webkit-scrollbar-thumb:hover {
+  background: var(--ot-muted);
+}
+
+.osterm-output ::selection,
+.osterm-output::selection,
+.osterm-input-text::selection {
+  background: var(--ot-selection);
+  color: inherit;
+}
+
+/* Output line types */
+.osterm-line {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.osterm-line-cmd {
+  /* echoed command line */
+}
+
+.osterm-line-err {
+  color: var(--ot-ansi-red);
+}
+
+.osterm-line-warn {
+  color: var(--ot-ansi-yellow);
+}
+
+.osterm-line-info {
+  color: var(--ot-ansi-cyan);
+}
+
+.osterm-line-ok {
+  color: var(--ot-ansi-green);
+}
+
+.osterm-line-muted {
+  color: var(--ot-muted);
+}
+
+.osterm-line-banner {
+  color: var(--ot-accent);
+  text-shadow: 0 0 3px currentColor;
+}
+
+.osterm-line-grep-match {
+  color: var(--ot-ansi-yellow);
+  font-weight: 700;
+  background: rgba(255, 200, 0, 0.10);
+}
+
+.osterm-line-dir {
+  color: var(--ot-ansi-blue);
+  font-weight: 700;
+}
+
+.osterm-line-exec {
+  color: var(--ot-ansi-green);
+}
+
+.osterm-line-file {
+  color: var(--ot-fg);
+}
+
+/* ----------------------------------------------------------------------------
+ * ANSI color classes
+ * --------------------------------------------------------------------------*/
+.ansi-bold      { font-weight: 700; }
+.ansi-dim       { opacity: 0.6; }
+.ansi-italic    { font-style: italic; }
+.ansi-underline { text-decoration: underline; }
+.ansi-strike    { text-decoration: line-through; }
+.ansi-reverse   { filter: invert(100%); }
+
+.ansi-fg-black    { color: var(--ot-ansi-black); }
+.ansi-fg-red      { color: var(--ot-ansi-red); }
+.ansi-fg-green    { color: var(--ot-ansi-green); }
+.ansi-fg-yellow   { color: var(--ot-ansi-yellow); }
+.ansi-fg-blue     { color: var(--ot-ansi-blue); }
+.ansi-fg-magenta  { color: var(--ot-ansi-magenta); }
+.ansi-fg-cyan     { color: var(--ot-ansi-cyan); }
+.ansi-fg-white    { color: var(--ot-ansi-white); }
+
+.ansi-fg-bblack   { color: var(--ot-ansi-bblack); }
+.ansi-fg-bred     { color: var(--ot-ansi-bred); }
+.ansi-fg-bgreen   { color: var(--ot-ansi-bgreen); }
+.ansi-fg-byellow  { color: var(--ot-ansi-byellow); }
+.ansi-fg-bblue    { color: var(--ot-ansi-bblue); }
+.ansi-fg-bmagenta { color: var(--ot-ansi-bmagenta); }
+.ansi-fg-bcyan    { color: var(--ot-ansi-bcyan); }
+.ansi-fg-bwhite   { color: var(--ot-ansi-bwhite); }
+
+.ansi-bg-black    { background-color: var(--ot-ansi-black); }
+.ansi-bg-red      { background-color: var(--ot-ansi-red); }
+.ansi-bg-green    { background-color: var(--ot-ansi-green); }
+.ansi-bg-yellow   { background-color: var(--ot-ansi-yellow); }
+.ansi-bg-blue     { background-color: var(--ot-ansi-blue); }
+.ansi-bg-magenta  { background-color: var(--ot-ansi-magenta); }
+.ansi-bg-cyan     { background-color: var(--ot-ansi-cyan); }
+.ansi-bg-white    { background-color: var(--ot-ansi-white); }
+
+/* ----------------------------------------------------------------------------
+ * Input row + prompt + cursor
+ * --------------------------------------------------------------------------*/
+.osterm-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 2px 0 6px 0;
+  flex: 0 0 auto;
+}
+
+.osterm-prompt {
+  color: var(--ot-prompt);
+  font-weight: 700;
+  white-space: pre;
+  flex: 0 0 auto;
+}
+
+.osterm-prompt .ot-pr-user  { color: var(--ot-prompt); }
+.osterm-prompt .ot-pr-host  { color: var(--ot-prompt); }
+.osterm-prompt .ot-pr-sep   { color: var(--ot-fg); }
+.osterm-prompt .ot-pr-path  { color: var(--ot-ansi-blue); }
+.osterm-prompt .ot-pr-tail  { color: var(--ot-ansi-magenta); }
+
+.osterm-input-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+  flex: 1 1 auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.osterm-input-text {
+  color: var(--ot-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.osterm-cursor {
+  display: inline-block;
+  color: var(--ot-cursor);
+  margin-left: 1px;
+  animation: ot-cursor-blink 1s steps(2, jump-none) infinite;
+  text-shadow: 0 0 4px currentColor;
+}
+
+.osterm-cursor.is-paused {
+  animation: none;
+  opacity: 0;
+}
+
+.osterm-cursor.is-mid {
+  display: inline-block;
+  width: 1ch;
+  position: relative;
+  animation: ot-cursor-blink 1s steps(2, jump-none) infinite;
+}
+
+@keyframes ot-cursor-blink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ----------------------------------------------------------------------------
+ * Shadow input — invisible, captures keys for active page
+ * --------------------------------------------------------------------------*/
+.osterm-shadow-input {
+  position: absolute;
+  left: -10000px;
+  top: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------------------
+ * Tab autocomplete dropdown
+ * --------------------------------------------------------------------------*/
+.osterm-completions {
+  display: block;
+  margin: 4px 0 0 0;
+  padding: 4px 6px;
+  background: var(--ot-bg-alt);
+  border: 1px solid var(--ot-border);
+  border-radius: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 0.92em;
+  color: var(--ot-muted);
+  white-space: pre-wrap;
+  word-break: break-all;
+  flex: 0 0 auto;
+}
+
+.osterm-completion-item {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 1px;
+  border-radius: 3px;
+  background: rgba(127, 127, 127, 0.08);
+  color: var(--ot-fg);
+}
+
+.osterm-completion-item.is-dir {
+  color: var(--ot-ansi-blue);
+}
+
+/* ----------------------------------------------------------------------------
+ * Reverse search overlay
+ * --------------------------------------------------------------------------*/
+.osterm-rsearch {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  z-index: 50;
+  animation: ot-rsearch-in 0.15s ease;
+}
+
+@keyframes ot-rsearch-in {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.osterm-rsearch-box {
+  background: var(--ot-bg-alt);
+  border: 1px solid var(--ot-accent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-width: 360px;
+  max-width: 600px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.osterm-rsearch-label {
+  color: var(--ot-accent);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.osterm-rsearch-text {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ot-fg);
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.osterm-rsearch-query {
+  color: var(--ot-ansi-yellow);
+}
+
+.osterm-rsearch-cursor {
+  color: var(--ot-cursor);
+  animation: ot-cursor-blink 1s infinite;
+}
+
+.osterm-rsearch-result {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ot-muted);
+  font-size: 13px;
+  min-height: 1.2em;
+  border-top: 1px dashed var(--ot-border);
+  padding-top: 6px;
+  margin-top: 4px;
+  white-space: pre-wrap;
+}
+
+.osterm-rsearch-hint {
+  color: var(--ot-muted);
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Snake game HUD
+ * --------------------------------------------------------------------------*/
+.osterm-snake-hud {
+  position: absolute;
+  top: 80px;
+  right: 16px;
+  background: var(--ot-bg-alt);
+  border: 1px solid var(--ot-accent);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--ot-fg);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.osterm-snake-hud .osterm-snake-score b {
+  color: var(--ot-ansi-yellow);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.osterm-snake-hud .osterm-snake-hint {
+  color: var(--ot-muted);
+  font-size: 10px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Matrix rain
+ * --------------------------------------------------------------------------*/
+.osterm-matrix-line {
+  color: var(--ot-ansi-green);
+  text-shadow: 0 0 4px currentColor;
+  font-weight: 700;
+}
+
+.osterm-matrix-line span.dim {
+  color: rgba(50, 220, 70, 0.5);
+}
+
+.osterm-matrix-line span.bright {
+  color: #cdffd0;
+}
+
+/* ----------------------------------------------------------------------------
+ * Cowsay & banner styling
+ * --------------------------------------------------------------------------*/
+.osterm-art-block {
+  color: var(--ot-ansi-magenta);
+  text-shadow: 0 0 2px currentColor;
+}
+
+.osterm-cow-block {
+  color: var(--ot-ansi-bcyan);
+}
+
+/* ----------------------------------------------------------------------------
+ * Neofetch
+ * --------------------------------------------------------------------------*/
+.osterm-neofetch {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 22px;
+  align-items: start;
+}
+
+.osterm-neofetch-art {
+  color: var(--ot-accent);
+  text-shadow: 0 0 4px currentColor;
+  white-space: pre;
+  line-height: 1.0;
+}
+
+.osterm-neofetch-info {
+  white-space: pre;
+}
+
+.osterm-neofetch-info b {
+  color: var(--ot-ansi-yellow);
+}
+
+.osterm-neofetch-info .nf-key {
+  color: var(--ot-ansi-cyan);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------------------------
+ * Calendar
+ * --------------------------------------------------------------------------*/
+.osterm-cal-today {
+  color: var(--ot-bg);
+  background: var(--ot-ansi-yellow);
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Help table
+ * --------------------------------------------------------------------------*/
+.osterm-help-section {
+  color: var(--ot-accent);
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.osterm-help-cmd {
+  color: var(--ot-ansi-bgreen);
+  font-weight: 700;
+}
+
+.osterm-help-desc {
+  color: var(--ot-muted);
+}
+
+/* ----------------------------------------------------------------------------
+ * Misc
+ * --------------------------------------------------------------------------*/
+.osterm-spacer {
+  height: 6px;
+}
+
+.osterm-hr {
+  border: none;
+  border-top: 1px dashed var(--ot-border);
+  margin: 6px 0;
+}
+
+.osterm-link {
+  color: var(--ot-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.osterm-progress {
+  display: inline-block;
+  vertical-align: middle;
+  width: 200px;
+  height: 6px;
+  background: var(--ot-bg-alt);
+  border: 1px solid var(--ot-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.osterm-progress > i {
+  display: block;
+  height: 100%;
+  background: var(--ot-accent);
+  transition: width 0.18s ease;
+}
+
+/* End of stylesheet */

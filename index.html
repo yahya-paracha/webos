@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="WebOS — A fully functional desktop operating system that runs inside your browser." />
+  <meta name="author" content="WebOS Project" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>WebOS — Desktop in your Browser</title>
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Stylesheets (load order matters: themes first so variables exist) -->
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/boot.css" />
+  <link rel="stylesheet" href="css/desktop.css" />
+  <link rel="stylesheet" href="css/taskbar.css" />
+  <link rel="stylesheet" href="css/windows.css" />
+  <!-- Day 6 -->
+  <link rel="stylesheet" href="css/notifications.css" />
+  <link rel="stylesheet" href="css/widgets.css" />
+
+  <!-- Inline favicon (data URI) -->
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%237c3aed"/><stop offset="1" stop-color="%2306b6d4"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(%23g)"/><path d="M16 22h32v6H16zM16 32h22v6H16zM16 42h28v6H16z" fill="white" opacity=".95"/></svg>'
+  />
+</head>
+<body>
+  <!-- ============================================================
+       BOOT SCREEN
+       ============================================================ -->
+  <div id="boot-screen" class="boot-screen" aria-hidden="false">
+    <div class="boot-stars" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="boot-container">
+      <div class="boot-logo">
+        <svg class="boot-logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="WebOS logo">
+          <defs>
+            <linearGradient id="bootGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--accent-1, #7c3aed)" />
+              <stop offset="100%" stop-color="var(--accent-2, #06b6d4)" />
+            </linearGradient>
+            <filter id="bootGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="b" />
+              <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="url(#bootGrad)" stroke-width="3" opacity=".35" />
+          <circle class="boot-ring" cx="60" cy="60" r="44" fill="none" stroke="url(#bootGrad)" stroke-width="4" stroke-linecap="round" stroke-dasharray="40 220" filter="url(#bootGlow)" />
+          <g fill="url(#bootGrad)" filter="url(#bootGlow)">
+            <rect x="34" y="44" width="52" height="6" rx="3" />
+            <rect x="34" y="57" width="38" height="6" rx="3" />
+            <rect x="34" y="70" width="46" height="6" rx="3" />
+          </g>
+        </svg>
+        <h1 class="boot-title">WebOS</h1>
+        <p class="boot-tagline">Desktop, reimagined for the browser.</p>
+      </div>
+
+      <div class="boot-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="boot-progress-bar" id="boot-progress-bar"></div>
+        <div class="boot-progress-glow"></div>
+      </div>
+
+      <div class="boot-steps" id="boot-steps" aria-live="polite">
+        <div class="boot-step" data-step="0"><span class="boot-step-icon">⚙</span><span class="boot-step-text">Initializing kernel…</span></div>
+        <div class="boot-step" data-step="1"><span class="boot-step-icon">🧬</span><span class="boot-step-text">Mounting virtual filesystem…</span></div>
+        <div class="boot-step" data-step="2"><span class="boot-step-icon">🖼</span><span class="boot-step-text">Loading display server…</span></div>
+        <div class="boot-step" data-step="3"><span class="boot-step-icon">🎨</span><span class="boot-step-text">Compositing window manager…</span></div>
+        <div class="boot-step" data-step="4"><span class="boot-step-icon">📡</span><span class="boot-step-text">Starting network services…</span></div>
+        <div class="boot-step" data-step="5"><span class="boot-step-icon">🔔</span><span class="boot-step-text">Initializing notification daemon…</span></div>
+        <div class="boot-step" data-step="6"><span class="boot-step-icon">🪟</span><span class="boot-step-text">Starting widget compositor…</span></div>
+        <div class="boot-step" data-step="7"><span class="boot-step-icon">✨</span><span class="boot-step-text">Welcome to WebOS</span></div>
+      </div>
+
+      <div class="boot-version">
+        <span class="boot-version-label">v1.0.0 “Aurora”</span>
+        <span class="boot-version-build" id="boot-build"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DESKTOP
+       ============================================================ -->
+  <div id="desktop" class="desktop" aria-hidden="true">
+    <div class="desktop-wallpaper" id="desktop-wallpaper"></div>
+    <div class="desktop-overlay" aria-hidden="true"></div>
+
+    <!-- Desktop icon grid -->
+    <div id="desktop-icons" class="desktop-icons" role="list" aria-label="Desktop icons"></div>
+
+    <!-- Selection rectangle (drag to select) -->
+    <div id="selection-box" class="selection-box" hidden></div>
+
+    <!-- Window container (z-index managed by windowManager.js) -->
+    <div id="windows-root" class="windows-root" aria-label="Open windows"></div>
+
+    <!-- Right-click context menu (desktop) -->
+    <div id="context-menu" class="context-menu" role="menu" hidden>
+      <div class="context-item" data-action="refresh"  role="menuitem"><span class="ci-ico">⟳</span> Refresh</div>
+      <div class="context-item" data-action="newfolder" role="menuitem"><span class="ci-ico">📁</span> New Folder</div>
+      <div class="context-item" data-action="newfile"   role="menuitem"><span class="ci-ico">📝</span> New Text File</div>
+      <div class="context-separator"></div>
+      <div class="context-item" data-action="arrange"   role="menuitem"><span class="ci-ico">▦</span> Arrange Icons</div>
+      <div class="context-item has-sub" data-action="theme" role="menuitem">
+        <span class="ci-ico">🎨</span> Theme
+        <span class="ci-arrow">›</span>
+        <div class="context-submenu" role="menu">
+          <div class="context-item" data-theme="dark"      role="menuitem">🌙 Dark</div>
+          <div class="context-item" data-theme="light"     role="menuitem">☀ Light</div>
+          <div class="context-item" data-theme="cyberpunk" role="menuitem">🌆 Cyberpunk</div>
+          <div class="context-item" data-theme="retro"     role="menuitem">📺 Retro</div>
+          <div class="context-item" data-theme="forest"    role="menuitem">🌲 Forest</div>
+        </div>
+      </div>
+      <div class="context-item has-sub" data-action="wallpaper" role="menuitem">
+        <span class="ci-ico">🖼</span> Wallpaper
+        <span class="ci-arrow">›</span>
+        <div class="context-submenu" role="menu">
+          <div class="context-item" data-wallpaper="aurora"   role="menuitem">Aurora</div>
+          <div class="context-item" data-wallpaper="nebula"   role="menuitem">Nebula</div>
+          <div class="context-item" data-wallpaper="mountain" role="menuitem">Mountain</div>
+          <div class="context-item" data-wallpaper="grid"     role="menuitem">Grid</div>
+          <div class="context-item" data-wallpaper="solid"    role="menuitem">Solid</div>
+        </div>
+      </div>
+      <div class="context-separator"></div>
+      <div class="context-item" data-action="settings" role="menuitem"><span class="ci-ico">⚙</span> Display Settings</div>
+      <div class="context-item" data-action="about"    role="menuitem"><span class="ci-ico">ⓘ</span> About WebOS</div>
+    </div>
+
+    <!-- Window context menu (right click on titlebar) -->
+    <div id="window-context-menu" class="context-menu" role="menu" hidden>
+      <div class="context-item" data-action="restore"  role="menuitem"><span class="ci-ico">⤺</span> Restore</div>
+      <div class="context-item" data-action="minimize" role="menuitem"><span class="ci-ico">▁</span> Minimize</div>
+      <div class="context-item" data-action="maximize" role="menuitem"><span class="ci-ico">▢</span> Maximize</div>
+      <div class="context-separator"></div>
+      <div class="context-item" data-action="close"    role="menuitem"><span class="ci-ico">✕</span> Close</div>
+    </div>
+
+    <!-- ==========================================================
+         START MENU
+         ========================================================== -->
+    <div id="start-menu" class="start-menu" hidden aria-label="Start menu">
+      <div class="sm-header">
+        <div class="sm-user">
+          <div class="sm-avatar" aria-hidden="true">U</div>
+          <div class="sm-user-info">
+            <div class="sm-user-name">User</div>
+            <div class="sm-user-status">Online</div>
+          </div>
+        </div>
+        <div class="sm-search">
+          <span class="sm-search-ico">🔎</span>
+          <input id="sm-search-input" type="text" placeholder="Search apps, files, settings…" aria-label="Search" />
+        </div>
+      </div>
+
+      <div class="sm-body">
+        <aside class="sm-sidebar">
+          <button class="sm-side-btn" data-pane="pinned"    title="Pinned"   ><span>📌</span><span class="sm-side-label">Pinned</span></button>
+          <button class="sm-side-btn" data-pane="all"       title="All apps" ><span>▦</span><span class="sm-side-label">All apps</span></button>
+          <button class="sm-side-btn" data-pane="recent"    title="Recent"   ><span>🕒</span><span class="sm-side-label">Recent</span></button>
+          <button class="sm-side-btn" data-pane="settings"  title="Settings" ><span>⚙</span><span class="sm-side-label">Settings</span></button>
+        </aside>
+
+        <main class="sm-main">
+          <section class="sm-pane active" data-pane="pinned">
+            <h3 class="sm-pane-title">Pinned</h3>
+            <div class="sm-grid" id="sm-grid-pinned"></div>
+          </section>
+          <section class="sm-pane" data-pane="all">
+            <h3 class="sm-pane-title">All apps</h3>
+            <div class="sm-list" id="sm-list-all"></div>
+          </section>
+          <section class="sm-pane" data-pane="recent">
+            <h3 class="sm-pane-title">Recently opened</h3>
+            <div class="sm-list" id="sm-list-recent"></div>
+          </section>
+          <section class="sm-pane" data-pane="settings">
+            <h3 class="sm-pane-title">Quick settings</h3>
+            <div class="sm-settings">
+              <div class="sm-setting">
+                <label>Theme</label>
+                <div class="sm-theme-row">
+                  <button class="sm-theme-chip" data-theme="dark">🌙 Dark</button>
+                  <button class="sm-theme-chip" data-theme="light">☀ Light</button>
+                  <button class="sm-theme-chip" data-theme="cyberpunk">🌆 Cyber</button>
+                  <button class="sm-theme-chip" data-theme="retro">📺 Retro</button>
+                  <button class="sm-theme-chip" data-theme="forest">🌲 Forest</button>
+                </div>
+              </div>
+              <div class="sm-setting">
+                <label>Animations</label>
+                <input id="sm-toggle-anim" type="checkbox" checked />
+              </div>
+              <div class="sm-setting">
+                <label>Sound</label>
+                <input id="sm-toggle-sound" type="checkbox" />
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="sm-footer">
+        <button class="sm-power-btn" data-action="lock"     title="Lock"    >🔒 <span>Lock</span></button>
+        <button class="sm-power-btn" data-action="restart"  title="Restart" >⟳ <span>Restart</span></button>
+        <button class="sm-power-btn" data-action="shutdown" title="Shutdown">⏻ <span>Shutdown</span></button>
+      </footer>
+    </div>
+
+    <!-- ==========================================================
+         TASKBAR
+         ========================================================== -->
+    <div id="taskbar" class="taskbar" role="toolbar" aria-label="Taskbar">
+      <button id="start-button" class="start-button" aria-label="Open start menu" aria-expanded="false">
+        <span class="start-icon" aria-hidden="true">
+          <span class="start-tile"></span>
+          <span class="start-tile"></span>
+          <span class="start-tile"></span>
+          <span class="start-tile"></span>
+        </span>
+        <span class="start-label">Start</span>
+      </button>
+
+      <div class="taskbar-search">
+        <span class="taskbar-search-ico">🔎</span>
+        <input id="taskbar-search" type="text" placeholder="Search" aria-label="Search WebOS" />
+      </div>
+
+      <div id="taskbar-apps" class="taskbar-apps" role="tablist" aria-label="Open applications"></div>
+
+      <div class="taskbar-tray">
+        <div class="tray-icon" id="tray-network" title="Network">📶</div>
+        <div class="tray-icon" id="tray-volume"  title="Volume" >🔊</div>
+        <div class="tray-icon" id="tray-battery" title="Battery">🔋</div>
+        <div class="tray-icon" id="tray-settings" title="Settings (Win+I)" onclick="window.WindowManager&&WindowManager.openApp('settings')">⚙</div>
+        <div class="tray-icon" id="tray-notifications" title="Notifications">🔔
+          <span id="tray-badge" class="tray-badge" hidden>0</span>
+        </div>
+        <div class="taskbar-clock" id="taskbar-clock" title="">
+          <div class="clock-time" id="clock-time">--:--</div>
+          <div class="clock-date" id="clock-date">—</div>
+        </div>
+        <button class="show-desktop" id="show-desktop" title="Show desktop" aria-label="Show desktop"></button>
+      </div>
+    </div>
+
+    <!-- Notification center -->
+    <div id="notification-center" class="notification-center" hidden>
+      <div class="nc-header">
+        <h3>Notifications</h3>
+        <button id="nc-clear" class="nc-clear">Clear all</button>
+      </div>
+      <div id="nc-list" class="nc-list"></div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS  (order matters — managers must load before consumers)
+       ============================================================ -->
+  <script src="js/themeEngine.js"   defer></script>
+  <script src="js/fileSystem.js"    defer></script>
+  <script src="js/windowManager.js" defer></script>
+  <script src="js/contextMenus.js"  defer></script>
+  <script src="js/taskbar.js"       defer></script>
+  <script src="js/startMenu.js"     defer></script>
+  <script src="js/desktop.js"       defer></script>
+  <script src="js/fileManager.js"   defer></script>
+  <!-- Day 3 apps -->
+  <script src="js/textEditor.js"    defer></script>
+  <script src="js/calculator.js"    defer></script>
+  <script src="js/browser.js"       defer></script>
+  <!-- Day 4 apps -->
+  <script src="js/paint.js"         defer></script>
+  <script src="js/musicPlayer.js"   defer></script>
+  <!-- Day 5 apps + backend bridge -->
+  <script src="js/backendSync.js"   defer></script>
+  <script src="js/terminal.js"      defer></script>
+  <script src="js/settings.js"      defer></script>
+  <!-- Day 6: Notifications + Widgets + ARIA + OsStore -->
+  <script src="js/notifications.js" defer></script>
+  <script src="js/widgets.js"       defer></script>
+  <script src="js/aria.js"          defer></script>
+  <script src="js/appStore.js"      defer></script>
+  <!-- Day 7: Games + final polish -->
+  <script src="js/chess.js"         defer></script>
+  <script src="js/tetris.js"        defer></script>
+  <script src="js/minesweeper.js"   defer></script>
+  <script src="js/polish.js"        defer></script>
+  <script src="js/boot.js"          defer></script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+/* ==========================================================================
+   WebOS — desktop.css
+   Wallpaper, icon grid, selection box, context menu, notifications, toasts
+   ========================================================================== */
+
+.desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+}
+.desktop.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- Wallpaper layer ---------- */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background: var(--wallpaper-aurora);
+  background-size: cover;
+  background-position: center;
+  transition: background 600ms var(--ease-out);
+  z-index: var(--z-wallpaper);
+}
+
+.desktop-wallpaper[data-wallpaper="aurora"]   { background: var(--wallpaper-aurora);   }
+.desktop-wallpaper[data-wallpaper="nebula"]   { background: var(--wallpaper-nebula);   }
+.desktop-wallpaper[data-wallpaper="mountain"] { background: var(--wallpaper-mountain); }
+.desktop-wallpaper[data-wallpaper="grid"]     {
+  background: var(--wallpaper-grid);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+    var(--wallpaper-grid);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+}
+.desktop-wallpaper[data-wallpaper="solid"]    { background: var(--wallpaper-solid);    }
+
+.desktop-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 800px at 50% -10%, rgba(255,255,255,0.04), transparent 60%),
+    radial-gradient(1200px 800px at 50% 110%, rgba(0,0,0,0.25),       transparent 60%);
+  z-index: var(--z-wallpaper);
+}
+
+/* Subtle ambient floating gradient blobs (parallax feel) */
+.desktop-wallpaper::before,
+.desktop-wallpaper::after {
+  content: "";
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  pointer-events: none;
+  animation: blobFloat 18s ease-in-out infinite;
+}
+.desktop-wallpaper::before {
+  top: -160px; left: -120px;
+  background: radial-gradient(circle, var(--accent-1), transparent 70%);
+}
+.desktop-wallpaper::after {
+  bottom: -180px; right: -120px;
+  background: radial-gradient(circle, var(--accent-2), transparent 70%);
+  animation-delay: -9s;
+}
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(40px, -30px) scale(1.08); }
+}
+
+/* ---------- Icon grid ---------- */
+.desktop-icons {
+  position: absolute;
+  inset: 16px 16px calc(var(--taskbar-h) + 16px) 16px;
+  z-index: var(--z-icons);
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 100px);
+  grid-template-columns: repeat(auto-fill, 96px);
+  gap: 6px;
+  align-content: start;
+  justify-content: start;
+}
+
+.desktop-icon {
+  position: relative;
+  width: 96px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 4px 4px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--icon-fg);
+  text-shadow: var(--icon-shadow);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    transform  var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+}
+
+.desktop-icon:hover {
+  background: var(--hover-bg);
+  transform: translateY(-1px);
+}
+.desktop-icon:active { transform: translateY(0) scale(0.98); }
+
+.desktop-icon.selected {
+  background: var(--icon-selected-bg);
+  outline-color: var(--icon-selected-border);
+  box-shadow: 0 0 0 2px var(--icon-selected-border) inset;
+}
+
+.desktop-icon .icon-glyph {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.30);
+  transition: transform var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out);
+}
+.desktop-icon:hover .icon-glyph {
+  transform: translateY(-2px) scale(1.04);
+  filter: brightness(1.08);
+}
+
+.desktop-icon .icon-label {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 92px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Drag ghost while moving an icon */
+.desktop-icon.dragging {
+  opacity: 0.6;
+  transform: scale(1.05) rotate(-2deg);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ---------- Selection box ---------- */
+.selection-box {
+  position: absolute;
+  border: 1px solid var(--accent-1);
+  background: color-mix(in srgb, var(--accent-1) 18%, transparent);
+  pointer-events: none;
+  z-index: 6;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+}
+
+/* ---------- Context Menu ---------- */
+.context-menu {
+  position: fixed;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--start-bg);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid var(--start-border);
+  border-radius: var(--r-md);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.4);
+  color: var(--fg-0);
+  font-size: 13px;
+  z-index: var(--z-context);
+  animation: ctxIn 140ms var(--ease-out);
+  transform-origin: top left;
+}
+@keyframes ctxIn {
+  from { opacity: 0; transform: scale(.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.context-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.context-item:hover {
+  background: var(--hover-bg);
+}
+.context-item .ci-ico {
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--fg-2);
+}
+.context-item .ci-arrow {
+  margin-left: auto;
+  color: var(--fg-2);
+  font-size: 14px;
+}
+.context-separator {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--window-border);
+}
+.context-item.has-sub:hover > .context-submenu {
+  display: block;
+}
+.context-submenu {
+  display: none;
+  position: absolute;
+  top: -6px;
+  left: 100%;
+  min-width: 200px;
+  padding: 6px;
+  background: var(--start-bg);
+  border: 1px solid var(--start-border);
+  border-radius: var(--r-md);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.4);
+  animation: ctxIn 140ms var(--ease-out);
+}
+
+/* ---------- Notification center ---------- */
+.notification-center {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--taskbar-h) + 12px);
+  width: 360px;
+  max-height: 60vh;
+  background: var(--start-bg);
+  border: 1px solid var(--start-border);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  z-index: var(--z-context);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ncIn 220ms var(--ease-out);
+}
+@keyframes ncIn {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.nc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--window-border);
+}
+.nc-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.nc-clear {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--hover-bg);
+}
+.nc-clear:hover { background: var(--active-bg); }
+.nc-list {
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nc-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--fg-2);
+  font-size: 12px;
+}
+.nc-item {
+  padding: 10px 12px;
+  background: var(--hover-bg);
+  border-radius: var(--r-md);
+  border-left: 3px solid var(--accent-1);
+}
+.nc-item .nc-title { font-weight: 600; font-size: 13px; }
+.nc-item .nc-body  { color: var(--fg-2); font-size: 12px; margin-top: 2px; }
+.nc-item .nc-time  { color: var(--fg-3); font-size: 11px; margin-top: 4px; }
+
+/* ---------- Toasts ---------- */
+.toast-root {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--taskbar-h) + 12px);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  min-width: 240px;
+  max-width: 360px;
+  padding: 10px 14px;
+  background: var(--start-bg);
+  border: 1px solid var(--start-border);
+  border-left: 3px solid var(--accent-1);
+  border-radius: var(--r-md);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  font-size: 13px;
+  color: var(--fg-0);
+  animation: toastIn 240ms var(--ease-spring);
+}
+.toast.toast-out { animation: toastOut 240ms var(--ease-in) forwards; }
+.toast.success { border-left-color: var(--ok); }
+.toast.warn    { border-left-color: var(--warn); }
+.toast.danger  { border-left-color: var(--danger); }
+.toast.info    { border-left-color: var(--info); }
+.toast .t-title { font-weight: 600; margin-bottom: 2px; }
+.toast .t-body  { color: var(--fg-2); }
+
+@keyframes toastIn  { from { opacity:0; transform: translateX(20px) scale(.98);} to {opacity:1; transform:translateX(0) scale(1);} }
+@keyframes toastOut { to   { opacity:0; transform: translateX(20px) scale(.98);} }
