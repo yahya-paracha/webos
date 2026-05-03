@@ -39,10 +39,12 @@
 }
 
 .window.closing {
-  animation: windowClose 220ms var(--ease-in) forwards;
+  animation: windowClose 150ms var(--ease-in) forwards;
+  pointer-events: none;
 }
 @keyframes windowClose {
-  to { opacity: 0; transform: scale(.92) translateY(20px); }
+  from { opacity: 1; transform: scale(1);  }
+  to   { opacity: 0; transform: scale(.8); }
 }
 
 .window.minimizing {

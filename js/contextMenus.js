@@ -338,9 +338,13 @@
     state.keyHandler = (e) => onKey(e);
     state.resizeHandler = () => closeAll();
 
-    // pointerdown captures clicks on overlays before they bubble
+    // Single global click-outside listener pair: both pointerdown (captures
+    // clicks on overlays early) and click (covers accessibility / synthetic
+    // events). If the click target is not inside any open context menu, we
+    // close everything.
     setTimeout(() => {
       document.addEventListener("pointerdown", state.outsideHandler, true);
+      document.addEventListener("click",       state.outsideHandler, true);
       document.addEventListener("keydown",     state.keyHandler,      true);
       window.addEventListener("resize",        state.resizeHandler);
       window.addEventListener("blur",          state.resizeHandler);
@@ -352,6 +356,7 @@
   function closeAll() {
     if (state.outsideHandler) {
       document.removeEventListener("pointerdown", state.outsideHandler, true);
+      document.removeEventListener("click",       state.outsideHandler, true);
       state.outsideHandler = null;
     }
     if (state.keyHandler) {

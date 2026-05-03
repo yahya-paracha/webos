@@ -126,12 +126,16 @@
     btn.dataset.winId = win.id;
     btn.dataset.appId = win.appId || "";
     btn.setAttribute("role", "tab");
-    btn.title = win.title || "";
+    // Native tooltip (shown on hover by the browser) alongside the custom
+    // .ta-tooltip element, so the app name is always discoverable.
+    const displayName = win.title || "Untitled";
+    btn.title = displayName;
+    btn.setAttribute("aria-label", displayName);
     btn.innerHTML = `
       <span class="ta-ico">${escapeHtml(win.icon || "▦")}</span>
-      <span class="ta-label">${escapeHtml(win.title || "Untitled")}</span>
+      <span class="ta-label">${escapeHtml(displayName)}</span>
       <span class="ta-indicator"></span>
-      <span class="ta-tooltip">${escapeHtml(win.title || "Untitled")}</span>
+      <span class="ta-tooltip">${escapeHtml(displayName)}</span>
     `;
     btn.addEventListener("click", () => {
       // toggle minimize/restore/focus
@@ -196,13 +200,20 @@
     const label = btn.querySelector(".ta-label");
     const tip   = btn.querySelector(".ta-tooltip");
     const ico   = btn.querySelector(".ta-ico");
-    if (label) label.textContent = win.title || "Untitled";
-    if (tip)   tip.textContent   = win.title || "Untitled";
-    if (ico)   ico.textContent   = win.icon  || "▦";
-    btn.title = win.title || "";
+    const name  = win.title || "Untitled";
+    if (label) label.textContent = name;
+    if (tip)   tip.textContent   = name;
+    if (ico)   ico.textContent   = win.icon || "▦";
+    btn.title = name;
+    btn.setAttribute("aria-label", name);
     const focused = window.WindowManager && window.WindowManager.getFocused();
-    btn.classList.toggle("active",   focused && focused.id === win.id && !win.minimized);
+    const isActive = !!(focused && focused.id === win.id && !win.minimized);
+    // Mark the currently-focused (active) window in the taskbar. Only one
+    // taskbar entry should be .active at any time, so the CSS highlight is
+    // unambiguous.
+    btn.classList.toggle("active",    isActive);
     btn.classList.toggle("minimized", !!win.minimized);
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
   }
 
   function flashApp(winId) {
