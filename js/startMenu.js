@@ -583,7 +583,10 @@
     const sb = document.getElementById("start-button");
     if (sb) { sb.classList.add("active"); sb.setAttribute("aria-expanded", "true"); }
 
-    setTimeout(() => document.addEventListener("pointerdown", outsideStart, true), 0);
+    setTimeout(() => {
+      document.addEventListener("pointerdown", outsideStart, true);
+      document.addEventListener("click",       outsideStart, true);
+    }, 0);
     document.addEventListener("keydown", onEscClose);
     emit("startopen", {});
   }
@@ -598,6 +601,7 @@
     const sb = document.getElementById("start-button");
     if (sb) { sb.classList.remove("active"); sb.setAttribute("aria-expanded", "false"); }
     document.removeEventListener("pointerdown", outsideStart, true);
+    document.removeEventListener("click",       outsideStart, true);
     document.removeEventListener("keydown", onEscClose);
     closeAppMenu();
     emit("startclose", {});
@@ -605,12 +609,18 @@
 
   function toggle() { state.open ? close() : open(); }
 
+  // Single global click-outside listener: if the click target isn't inside
+  // the Start Menu or the Start button, close the menu.
   function outsideStart(e) {
+    if (!state.open) return;
     const root = document.getElementById("start-menu");
     const sb   = document.getElementById("start-button");
     if (!root) return;
-    if (root.contains(e.target)) return;
-    if (sb && sb.contains(e.target)) return;
+    const t = e.target;
+    if (root.contains(t)) return;
+    if (sb && sb.contains(t)) return;
+    // Don't fight other popups that might be on screen (e.g. context menus)
+    if (t && t.closest && t.closest(".webos-ctx, .context-menu, #sm-app-menu")) return;
     close();
   }
 

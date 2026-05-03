@@ -56,6 +56,53 @@
   };
 
   /* --------------------------------------------------------------------------
+   * DOM selector cache
+   * --------------------------------------------------------------------------
+   * Hot paths (drag/resize pointermove, viewport() queries, context menu
+   * lookups) used to call document.getElementById on every event. We cache
+   * those references once and only re-query if the cached node is no longer
+   * in the DOM. This materially reduces layout/selector work during drag.
+   * ------------------------------------------------------------------------*/
+  const domCache = {
+    _taskbar:       null,
+    _taskbarH:      null,
+    _ctxMenu:       null,
+
+    taskbar() {
+      if (!this._taskbar || !document.body.contains(this._taskbar)) {
+        this._taskbar = document.getElementById("taskbar");
+        this._taskbarH = this._taskbar ? this._taskbar.offsetHeight : 52;
+      }
+      return this._taskbar;
+    },
+    taskbarHeight() {
+      const tb = this.taskbar();
+      // Only re-measure on explicit invalidation; the cached height is safe
+      // while the taskbar element is unchanged (see invalidate()).
+      if (this._taskbarH == null) {
+        this._taskbarH = tb ? tb.offsetHeight : 52;
+      }
+      return this._taskbarH;
+    },
+    windowContextMenu() {
+      if (!this._ctxMenu || !document.body.contains(this._ctxMenu)) {
+        this._ctxMenu = document.getElementById("window-context-menu");
+      }
+      return this._ctxMenu;
+    },
+    invalidate() {
+      this._taskbar = null;
+      this._taskbarH = null;
+      this._ctxMenu = null;
+    },
+  };
+
+  // Recompute cached layout measurements when the viewport changes.
+  try {
+    window.addEventListener("resize", () => { domCache._taskbarH = null; });
+  } catch (_) {}
+
+  /* --------------------------------------------------------------------------
    * Utilities
    * ------------------------------------------------------------------------*/
   function uid(prefix) {
@@ -86,8 +133,10 @@
   }
 
   function viewport() {
-    const tb = document.getElementById("taskbar");
-    const taskbarH = tb ? tb.offsetHeight : 52;
+    // Use cached taskbar reference/height — this is called on every
+    // pointermove during drag/resize so avoiding getElementById + offsetHeight
+    // layout reads on each frame noticeably reduces jank.
+    const taskbarH = domCache.taskbarHeight();
     return {
       x: 0,
       y: 0,
@@ -109,6 +158,79 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  /* --------------------------------------------------------------------------
+   * Lazy-load registry
+   * --------------------------------------------------------------------------
+   * For heavy apps we register a lightweight stub at startup (so the Start
+   * Menu / desktop can list them) and only fetch the real app script on the
+   * first time the user opens it. The real script is expected to call
+   * registerApp() for the same id, which replaces the stub.
+   *
+   * Usage:
+   *   WindowManager.registerLazyApp({
+   *     id: "chess", title: "Chess", icon: "♞", src: "js/chess.js",
+   *     width: 640, height: 640, category: "Games"
+   *   });
+   * ------------------------------------------------------------------------*/
+  const lazyApps = new Map();        // appId -> { src, promise }
+  const loadedScripts = new Set();   // src strings already injected
+
+  function loadScriptOnce(src) {
+    if (loadedScripts.has(src)) return Promise.resolve();
+    loadedScripts.add(src);
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = false;      // preserve execution order
+      s.defer = false;
+      s.onload  = () => resolve();
+      s.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  function registerLazyApp(def) {
+    if (!def || !def.id || !def.src) {
+      console.warn("[WindowManager] registerLazyApp: need id and src", def);
+      return false;
+    }
+    // Register a stub that shows a "Loading…" window. The stub will be
+    // replaced when the real script calls registerApp(id).
+    const stubRender = function (body, win) {
+      body.innerHTML = `
+        <div style="height:100%;display:flex;flex-direction:column;align-items:center;
+                    justify-content:center;gap:10px;color:var(--fg-2);font-size:13px;">
+          <div style="font-size:40px;">${escapeHtml(def.icon || "▦")}</div>
+          <div>Loading ${escapeHtml(def.title || def.id)}…</div>
+        </div>`;
+    };
+    registerApp(Object.assign({}, def, {
+      render: stubRender,
+      __lazy: true,
+    }));
+    lazyApps.set(def.id, { src: def.src, promise: null });
+    return true;
+  }
+
+  function loadLazyApp(id) {
+    const entry = lazyApps.get(id);
+    if (!entry) return Promise.resolve(false);
+    if (entry.promise) return entry.promise;
+    entry.promise = loadScriptOnce(entry.src).then(() => {
+      // If the app script registered itself, it is no longer a stub.
+      const def = state.apps.get(id);
+      if (!def || def.__lazy) {
+        console.warn("[WindowManager] Lazy app '" + id + "' did not register after load.");
+      }
+      return true;
+    }).catch((e) => {
+      console.error("[WindowManager] Lazy load failed:", e);
+      entry.promise = null; // allow retry
+      return false;
+    });
+    return entry.promise;
   }
 
   /* --------------------------------------------------------------------------
@@ -560,7 +682,7 @@
    * Window context menu (titlebar right-click)
    * ------------------------------------------------------------------------*/
   function showWindowContextMenu(win, x, y) {
-    const menu = document.getElementById("window-context-menu");
+    const menu = domCache.windowContextMenu();
     if (!menu) return;
     menu.hidden = false;
     // Position
@@ -569,9 +691,18 @@
     menu.style.left = clamp(x, 4, vw - w - 4) + "px";
     menu.style.top  = clamp(y, 4, vh - h - 4) + "px";
 
-    function close() { menu.hidden = true; document.removeEventListener("pointerdown", onDoc, true); }
+    // Single global click-outside listener: any click outside the window
+    // context menu closes it.
+    function close() {
+      menu.hidden = true;
+      document.removeEventListener("pointerdown", onDoc, true);
+      document.removeEventListener("click",       onDoc, true);
+    }
     function onDoc(e) { if (!menu.contains(e.target)) close(); }
-    setTimeout(() => document.addEventListener("pointerdown", onDoc, true), 0);
+    setTimeout(() => {
+      document.addEventListener("pointerdown", onDoc, true);
+      document.addEventListener("click",       onDoc, true);
+    }, 0);
 
     menu.querySelectorAll(".context-item").forEach((item) => {
       item.onclick = (e) => {
@@ -592,11 +723,39 @@
    * Public — open / create
    * ------------------------------------------------------------------------*/
   function openApp(appId, opts) {
-    const def = state.apps.get(appId);
+    let def = state.apps.get(appId);
     if (!def) {
       console.warn("[WindowManager] Unknown app:", appId);
       return null;
     }
+
+    // Lazy load: if this app is still a stub, asynchronously load the real
+    // script and then re-open. We still return the stub window (or null)
+    // synchronously so callers don't break.
+    if (def.__lazy && lazyApps.has(appId)) {
+      loadLazyApp(appId).then((ok) => {
+        if (!ok) return;
+        const real = state.apps.get(appId);
+        if (!real || real.__lazy) return;
+        // If the stub window is still open & empty, replace its content;
+        // otherwise open fresh.
+        const stubWin = Array.from(state.windows.values())
+          .find((w) => w.appId === appId && w.render === def.render);
+        if (stubWin && stubWin.bodyEl) {
+          try {
+            stubWin.render = real.render;
+            stubWin.title = real.title || stubWin.title;
+            stubWin.icon  = real.icon  || stubWin.icon;
+            if (stubWin.titleEl) stubWin.titleEl.textContent = stubWin.title;
+            if (stubWin.iconEl)  stubWin.iconEl .textContent = stubWin.icon;
+            stubWin.bodyEl.innerHTML = "";
+            real.render(stubWin.bodyEl, stubWin);
+            emit("windowtitle", { id: stubWin.id, title: stubWin.title });
+          } catch (e) { console.error("[WindowManager] lazy rehydrate failed:", e); }
+        }
+      });
+    }
+
     if (def.singleton) {
       const existing = Array.from(state.windows.values()).find((w) => w.appId === appId);
       if (existing) {
@@ -634,8 +793,12 @@
       } catch (e) { console.error(e); }
     }
     if (win.el) {
+      // Trigger close animation (scale 0.8 + fade 0 in 150ms — see windows.css)
       win.el.classList.add("closing");
+      let removed = false;
       const remove = () => {
+        if (removed) return;
+        removed = true;
         try { win.el.remove(); } catch (_) {}
         state.windows.delete(id);
         state.order = state.order.filter((wid) => wid !== id);
@@ -646,8 +809,8 @@
         if (top) focusWindow(top);
       };
       win.el.addEventListener("animationend", remove, { once: true });
-      // Safety fallback
-      setTimeout(() => { if (state.windows.has(id)) remove(); }, 400);
+      // Safety fallback slightly longer than the 150ms animation duration
+      setTimeout(remove, 180);
     } else {
       state.windows.delete(id);
       state.order = state.order.filter((wid) => wid !== id);
@@ -1255,6 +1418,7 @@
     init,
     // app registry
     registerApp, unregisterApp, getApps, getApp,
+    registerLazyApp, loadLazyApp,
     // window lifecycle
     openApp, openWindow, closeWindow, closeAll,
     focusWindow, getFocused,

@@ -435,23 +435,40 @@
    * ------------------------------------------------------------------------*/
   function persist(immediate) {
     if (immediate) {
+      // Any pending debounced write should be cancelled and replaced
+      // with the immediate write so the final state is always flushed.
+      if (state.persistTimer) {
+        clearTimeout(state.persistTimer);
+        state.persistTimer = null;
+      }
+      state.pendingPersist = false;
       doPersist();
       return;
     }
-    // coalesce successive writes into one localStorage call within 80ms
+    // Debounce: wait 300ms after last change before writing to localStorage.
+    // Any new call within the window resets the timer so we never write on
+    // every keystroke — only once, ~300ms after user stops typing.
     if (state.persistTimer) {
-      state.pendingPersist = true;
-      return;
+      clearTimeout(state.persistTimer);
     }
     state.persistTimer = setTimeout(() => {
       state.persistTimer = null;
+      state.pendingPersist = false;
       doPersist();
-      if (state.pendingPersist) {
-        state.pendingPersist = false;
-        persist();
-      }
-    }, 80);
+    }, 300);
   }
+
+  // Flush any pending debounced write before the tab unloads so we never
+  // lose the final 300ms of edits.
+  try {
+    window.addEventListener("beforeunload", () => {
+      if (state.persistTimer) {
+        clearTimeout(state.persistTimer);
+        state.persistTimer = null;
+        try { doPersist(); } catch (_) {}
+      }
+    });
+  } catch (_) {}
 
   function doPersist() {
     try {

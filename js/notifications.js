@@ -776,10 +776,12 @@
     state.center.classList.remove("wn-out");
     positionCenter();
     state.centerOpen = true;
-    // Outside-click dismiss
+    // Single global click-outside listener: any click outside the panel
+    // and its tray anchor closes the notification panel.
     setTimeout(() => {
       document.addEventListener("mousedown", onOutsideClick, true);
-      document.addEventListener("keydown", onEscClose, true);
+      document.addEventListener("click",     onOutsideClick, true);
+      document.addEventListener("keydown",   onEscClose,     true);
     }, 0);
     emit("center-opened", {});
   }
@@ -796,7 +798,8 @@
     setTimeout(finish, 240);
     state.centerOpen = false;
     document.removeEventListener("mousedown", onOutsideClick, true);
-    document.removeEventListener("keydown", onEscClose, true);
+    document.removeEventListener("click",     onOutsideClick, true);
+    document.removeEventListener("keydown",   onEscClose,     true);
     emit("center-closed", {});
   }
 
